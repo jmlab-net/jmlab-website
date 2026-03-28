@@ -1,0 +1,112 @@
+---
+import ThemeToggle from '../islands/ThemeToggle.astro';
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = Astro.url.pathname } = Astro.props;
+
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/blog/', label: 'Blog' },
+  { href: '/projects/', label: 'Projects' },
+  { href: '/about/', label: 'About' },
+];
+
+function isActive(href: string, current: string): boolean {
+  if (href === '/') return current === '/';
+  return current.startsWith(href);
+}
+---
+
+<nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[var(--bg)]/80 border-b border-[var(--border)]">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="/" class="font-display text-xl font-800 tracking-tight hover:text-[var(--color-primary)] transition-colors">
+        <span class="gradient-text">JM</span><span class="text-[var(--text-muted)]">Lab</span>
+      </a>
+
+      <!-- Desktop nav -->
+      <div class="hidden md:flex items-center gap-1">
+        {links.map(({ href, label }) => (
+          <a
+            href={href}
+            class:list={[
+              'px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200',
+              isActive(href, currentPath)
+                ? 'text-[var(--color-primary)] bg-[var(--color-primary)]/10'
+                : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-raised)]',
+            ]}
+            aria-current={isActive(href, currentPath) ? 'page' : undefined}
+          >
+            {label}
+          </a>
+        ))}
+        <div class="ml-2 border-l border-[var(--border)] pl-2">
+          <ThemeToggle />
+        </div>
+      </div>
+
+      <!-- Mobile: theme toggle + hamburger -->
+      <div class="flex items-center gap-2 md:hidden">
+        <ThemeToggle />
+        <button
+          id="mobile-menu-toggle"
+          type="button"
+          aria-label="Toggle navigation menu"
+          aria-expanded="false"
+          class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-[var(--surface-raised)] transition-colors"
+        >
+          <svg id="menu-open-icon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="menu-close-icon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-[var(--border)]">
+    <div class="px-4 py-3 space-y-1">
+      {links.map(({ href, label }) => (
+        <a
+          href={href}
+          class:list={[
+            'block px-4 py-3 rounded-lg text-base font-medium transition-colors',
+            isActive(href, currentPath)
+              ? 'text-[var(--color-primary)] bg-[var(--color-primary)]/10'
+              : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-raised)]',
+          ]}
+          aria-current={isActive(href, currentPath) ? 'page' : undefined}
+        >
+          {label}
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>
+
+<script>
+  function initMobileMenu() {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    const openIcon = document.getElementById('menu-open-icon');
+    const closeIcon = document.getElementById('menu-close-icon');
+
+    toggle?.addEventListener('click', () => {
+      const isOpen = !menu?.classList.contains('hidden');
+      menu?.classList.toggle('hidden');
+      openIcon?.classList.toggle('hidden');
+      closeIcon?.classList.toggle('hidden');
+      toggle.setAttribute('aria-expanded', String(!isOpen));
+    });
+  }
+
+  initMobileMenu();
+  document.addEventListener('astro:after-swap', initMobileMenu);
+</script>

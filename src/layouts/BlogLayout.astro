@@ -1,0 +1,128 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TagList from '../components/common/TagList.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  heroImage?: string;
+  heroImageAlt?: string;
+  tags?: string[];
+  headings?: { depth: number; slug: string; text: string }[];
+  prevPost?: { slug: string; title: string } | null;
+  nextPost?: { slug: string; title: string } | null;
+}
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  tags = [],
+  headings = [],
+  prevPost,
+  nextPost,
+} = Astro.props;
+
+const formattedPubDate = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+<BaseLayout title={title} description={description}>
+  <article class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+    <div class="lg:grid lg:grid-cols-[1fr_240px] lg:gap-12">
+      <!-- Main content -->
+      <div>
+        <!-- Header -->
+        <header class="mb-12">
+          <div class="flex items-center gap-3 text-sm text-[var(--text-muted)] mb-4">
+            <time datetime={pubDate.toISOString()} class="font-mono">{formattedPubDate}</time>
+            {updatedDate && (
+              <>
+                <span>&middot;</span>
+                <span>Updated {formattedUpdatedDate}</span>
+              </>
+            )}
+          </div>
+          <h1 class="text-4xl sm:text-5xl font-display font-800 tracking-tight" transition:name={`blog-title-${Astro.url.pathname}`}>
+            {title}
+          </h1>
+          <p class="mt-4 text-xl text-[var(--text-muted)]">{description}</p>
+          {tags.length > 0 && (
+            <div class="mt-6">
+              <TagList tags={tags} linkable size="md" />
+            </div>
+          )}
+        </header>
+
+        <!-- Content -->
+        <div class="prose prose-lg max-w-none">
+          <slot />
+        </div>
+
+        <!-- Prev/Next navigation -->
+        {(prevPost || nextPost) && (
+          <nav class="mt-16 pt-8 border-t border-[var(--border)] grid grid-cols-2 gap-4" aria-label="Blog post navigation">
+            {prevPost ? (
+              <a href={`/blog/${prevPost.slug}/`} class="group text-left">
+                <span class="text-xs text-[var(--text-muted)] uppercase tracking-wider">Previous</span>
+                <p class="mt-1 font-display font-bold text-[var(--text)] group-hover:text-[var(--color-primary)] transition-colors">
+                  {prevPost.title}
+                </p>
+              </a>
+            ) : <div />}
+            {nextPost ? (
+              <a href={`/blog/${nextPost.slug}/`} class="group text-right">
+                <span class="text-xs text-[var(--text-muted)] uppercase tracking-wider">Next</span>
+                <p class="mt-1 font-display font-bold text-[var(--text)] group-hover:text-[var(--color-primary)] transition-colors">
+                  {nextPost.title}
+                </p>
+              </a>
+            ) : <div />}
+          </nav>
+        )}
+      </div>
+
+      <!-- Table of Contents sidebar -->
+      {tocHeadings.length > 0 && (
+        <aside class="hidden lg:block">
+          <div class="sticky top-24">
+            <h2 class="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] mb-4">
+              On this page
+            </h2>
+            <nav aria-label="Table of contents">
+              <ul class="space-y-2 text-sm border-l border-[var(--border)]">
+                {tocHeadings.map((heading) => (
+                  <li>
+                    <a
+                      href={`#${heading.slug}`}
+                      class:list={[
+                        'block py-1 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors border-l-2 -ml-px border-transparent hover:border-[var(--color-primary)]',
+                        heading.depth === 2 ? 'pl-4' : 'pl-8',
+                      ]}
+                    >
+                      {heading.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+        </aside>
+      )}
+    </div>
+  </article>
+</BaseLayout>

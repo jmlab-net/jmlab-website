@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/common/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const allProjects = await getCollection('projects');
+const projects = allProjects.sort(
+  (a, b) => (a.data.sortOrder ?? 99) - (b.data.sortOrder ?? 99)
+);
+
+const allTechnologies = [...new Set(projects.flatMap((p) => p.data.technologies))].sort();
+---
+
+<BaseLayout title="Projects" description="A showcase of personal projects spanning automation, infrastructure, AI pipelines, and web development.">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+    <!-- Header -->
+    <header class="mb-12">
+      <h1 class="font-display font-800 tracking-tight">
+        <span class="gradient-text">Projects</span>
+      </h1>
+      <p class="mt-3 text-xl text-[var(--text-muted)] max-w-2xl">
+        Things I've built — from infrastructure and automation to AI pipelines and this very website.
+      </p>
+    </header>
+
+    <!-- Technology filter -->
+    <div class="mb-8 flex flex-wrap gap-2" id="tech-filters">
+      <button
+        class="filter-btn active px-3 py-1.5 text-sm rounded-full font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/30 transition-colors"
+        data-filter="all"
+      >
+        All
+      </button>
+      {allTechnologies.map((tech) => (
+        <button
+          class="filter-btn px-3 py-1.5 text-sm rounded-full font-medium text-[var(--text-muted)] border border-[var(--border)] hover:border-[var(--color-primary)]/30 hover:text-[var(--text)] transition-colors"
+          data-filter={tech}
+        >
+          {tech}
+        </button>
+      ))}
+    </div>
+
+    <!-- Project grid -->
+    <div class="grid md:grid-cols-2 gap-6" id="project-grid">
+      {projects.map((project) => (
+        <div data-technologies={project.data.technologies.join(',')}>
+          <ProjectCard
+            title={project.data.title}
+            description={project.data.description}
+            slug={project.id}
+            technologies={project.data.technologies}
+            featured={project.data.featured}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  function initFilters() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+    const items = document.querySelectorAll<HTMLElement>('#project-grid > div');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = btn.dataset.filter;
+
+        buttons.forEach((b) => {
+          b.classList.remove('active', 'bg-[var(--color-primary)]/10', 'text-[var(--color-primary)]', 'border-[var(--color-primary)]/30');
+          b.classList.add('text-[var(--text-muted)]', 'border-[var(--border)]');
+        });
+        btn.classList.add('active', 'bg-[var(--color-primary)]/10', 'text-[var(--color-primary)]', 'border-[var(--color-primary)]/30');
+        btn.classList.remove('text-[var(--text-muted)]', 'border-[var(--border)]');
+
+        items.forEach((item) => {
+          const techs = item.dataset.technologies?.split(',') ?? [];
+          const show = filter === 'all' || techs.includes(filter!);
+          item.style.display = show ? '' : 'none';
+        });
+      });
+    });
+  }
+
+  initFilters();
+  document.addEventListener('astro:after-swap', initFilters);
+</script>

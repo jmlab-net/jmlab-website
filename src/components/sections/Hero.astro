@@ -1,0 +1,94 @@
+---
+---
+
+<section class="relative min-h-[85vh] flex items-center overflow-hidden">
+  <!-- Animated background -->
+  <div class="absolute inset-0 -z-10">
+    <!-- Grid pattern -->
+    <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(var(--text) 1px, transparent 1px), linear-gradient(90deg, var(--text) 1px, transparent 1px); background-size: 60px 60px;"></div>
+    <!-- Gradient orbs -->
+    <div class="absolute top-1/4 -left-32 w-96 h-96 bg-[var(--color-primary)] rounded-full blur-[128px] opacity-20"></div>
+    <div class="absolute bottom-1/4 -right-32 w-96 h-96 bg-[var(--color-secondary)] rounded-full blur-[128px] opacity-15"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[var(--color-accent)] rounded-full blur-[128px] opacity-10"></div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <div class="max-w-3xl">
+      <!-- Eyebrow -->
+      <div class="reveal flex items-center gap-3 mb-6">
+        <div class="h-px w-12 bg-[var(--color-primary)]"></div>
+        <span class="text-sm font-mono text-[var(--color-primary)] tracking-wider uppercase">
+          Developer &middot; Builder &middot; Automator
+        </span>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="reveal font-display font-800 tracking-tight">
+        I build things that
+        <span class="gradient-text">build themselves</span>
+      </h1>
+
+      <!-- Subhead -->
+      <p class="reveal mt-6 text-xl text-[var(--text-muted)] max-w-2xl leading-relaxed">
+        Software engineer obsessed with automation, self-hosting, and making
+        machines do the boring parts. Currently building AI content pipelines
+        and maintaining a homelab that runs 15+ services.
+      </p>
+
+      <!-- CTAs -->
+      <div class="reveal mt-10 flex flex-wrap gap-4">
+        <a
+          href="/projects/"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-primary)] text-[var(--color-on-primary)] font-semibold hover:bg-[var(--color-primary-light)] transition-colors duration-200"
+        >
+          View Projects
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </a>
+        <a
+          href="/blog/"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-[var(--border)] text-[var(--text)] font-semibold hover:border-[var(--color-primary)]/50 hover:bg-[var(--surface-raised)] transition-all duration-200"
+        >
+          Read the Blog
+        </a>
+      </div>
+
+      <!-- Stats -->
+      <div class="reveal mt-16 flex gap-8 sm:gap-12">
+        <div>
+          <div class="text-3xl font-display font-800 text-[var(--color-primary)]">15+</div>
+          <div class="text-sm text-[var(--text-muted)] mt-1">Self-hosted services</div>
+        </div>
+        <div>
+          <div class="text-3xl font-display font-800 text-[var(--color-secondary)]">99.7%</div>
+          <div class="text-sm text-[var(--text-muted)] mt-1">Homelab uptime</div>
+        </div>
+        <div>
+          <div class="text-3xl font-display font-800 text-[var(--color-accent)]">$0</div>
+          <div class="text-sm text-[var(--text-muted)] mt-1">Monthly hosting cost</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function initReveal() {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  }
+
+  initReveal();
+  document.addEventListener('astro:after-swap', initReveal);
+</script>

@@ -1,0 +1,307 @@
+/*
+ * Design System — jmlab.dev
+ * Palette: "Toxic Bloom"
+ *
+ * Typography choices:
+ * - Display: Syne — geometric, editorial, expressive.
+ * - Body: Outfit — clean geometric sans, excellent readability.
+ * - Mono: JetBrains Mono — purpose-built for code.
+ *
+ * Color palette — "Toxic Bloom":
+ * Bioluminescence in a midnight garden. Electric chartreuse paired with
+ * hot magenta and deep teal on a true-black canvas.
+ *
+ * - Primary: Electric chartreuse (#B9F43B) — links, buttons, highlights.
+ *   Extremely bright — requires dark text on primary-colored backgrounds.
+ * - Secondary: Hot magenta (#E91E90) — complementary pop, decorative.
+ * - Accent: Teal (#00BFA5) — tags, badges, tertiary interactive.
+ * - Dark surfaces: Green-tinted blacks for a botanical undertone.
+ * - Light surfaces: Barely-there green tints, deep forest text.
+ *
+ * Contrast notes:
+ * - Primary on dark bg: 15.6:1 AAA ✅
+ * - Text-primary on dark bg: 18.1:1 AAA ✅
+ * - Text-secondary on dark bg: 10.1:1 AAA ✅
+ * - Buttons use dark text (#050505) on chartreuse bg for 14.9:1 contrast.
+ * - Selection uses magenta bg + white text for 4.5:1 AA.
+ */
+
+@import "tailwindcss";
+@plugin '@tailwindcss/typography';
+
+/* ── Font imports ─────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Syne Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 800;
+  src: url('@fontsource-variable/syne/files/syne-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+@font-face {
+  font-family: 'Outfit Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url('@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* ── Tailwind theme tokens ────────────────────────────────────── */
+@theme inline {
+  --font-display: 'Syne Variable', ui-serif, Georgia, serif;
+  --font-body: 'Outfit Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'Fira Code', monospace;
+  --font-sans: 'Outfit Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* ── Toxic Bloom: accent colors ── */
+  --color-primary: #B9F43B;          /* electric chartreuse */
+  --color-primary-light: #D0FF6E;    /* lighter chartreuse for hover */
+  --color-primary-dark: #8BC220;     /* darkened for pressed states */
+  --color-secondary: #FF3CA0;        /* hot magenta — brightened from #E91E90 for 5.75:1 on surface */
+  --color-secondary-light: #FF6EBB;  /* lighter magenta */
+  --color-secondary-dark: #C01675;   /* darkened magenta */
+  --color-accent: #00BFA5;           /* teal */
+  --color-accent-light: #33D4BD;     /* lighter teal */
+  --color-accent-dark: #009680;      /* darkened teal */
+
+  /* Text color for use ON bright primary backgrounds (chartreuse) */
+  --color-on-primary: #050505;
+
+  /* ── Toxic Bloom: dark mode surfaces ── */
+  --color-dark-bg: #050505;            /* true black */
+  --color-dark-surface: #0F1210;       /* green-tinted black */
+  --color-dark-surface-raised: #1A1F1C;/* forest shadow */
+  --color-dark-border: #2E382E;        /* muted forest border */
+  --color-dark-text: #E8F5E9;          /* mint-white */
+  --color-dark-text-muted: #81C784;    /* soft green */
+
+  /* ── Toxic Bloom: light mode surfaces ── */
+  --color-light-bg: #F5FFF5;           /* barely-there green tint */
+  --color-light-surface: #E8F5E9;      /* light green surface */
+  --color-light-surface-raised: #FFFFFF;/* white raised for cards */
+  --color-light-border: #A5D6A7;       /* green-300 */
+  --color-light-text: #0A1F0A;         /* deep forest */
+  --color-light-text-muted: #2E5B2E;   /* mid forest */
+}
+
+/* ── CSS custom properties (theme-aware) ──────────────────────── */
+:root {
+  --bg: var(--color-dark-bg);
+  --surface: var(--color-dark-surface);
+  --surface-raised: var(--color-dark-surface-raised);
+  --border: var(--color-dark-border);
+  --text: var(--color-dark-text);
+  --text-muted: var(--color-dark-text-muted);
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg: var(--color-light-bg);
+  --surface: var(--color-light-surface);
+  --surface-raised: var(--color-light-surface-raised);
+  --border: var(--color-light-border);
+  --text: var(--color-light-text);
+  --text-muted: var(--color-light-text-muted);
+  /* Darkened accents for light backgrounds — ensures AA contrast */
+  --color-primary: #3E7B27;
+  --color-primary-light: #4A9430;
+  --color-primary-dark: #2D5C1C;
+  --color-secondary: #AD1457;
+  --color-secondary-light: #D81B60;
+  --color-secondary-dark: #880E4F;
+  --color-accent: #00796B;
+  --color-accent-light: #00897B;
+  --color-accent-dark: #004D40;
+  --color-on-primary: #FFFFFF;
+  color-scheme: light;
+}
+
+/* ── Reset & base styles ──────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100dvh;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  line-height: 1.15;
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+/* ── Typography scale ─────────────────────────────────────────── */
+h1 { font-size: clamp(2.5rem, 5vw + 1rem, 4.5rem); font-weight: 800; }
+h2 { font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem); }
+h3 { font-size: clamp(1.25rem, 2vw + 0.25rem, 1.75rem); }
+h4 { font-size: clamp(1.1rem, 1.5vw + 0.25rem, 1.35rem); }
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-primary-light);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+::selection {
+  background-color: var(--color-secondary-dark);
+  color: white;
+}
+
+/* ── Focus styles ─────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── Skip to content ──────────────────────────────────────────── */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+  border-radius: 0 0 0.5rem 0.5rem;
+  transition: top 0.2s ease;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* ── Scroll-triggered animation utilities ─────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ── Respect reduced motion ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Prose overrides for blog content ─────────────────────────── */
+.prose {
+  --tw-prose-body: var(--text);
+  --tw-prose-headings: var(--text);
+  --tw-prose-links: var(--color-primary);
+  --tw-prose-bold: var(--text);
+  --tw-prose-code: var(--color-secondary);
+  --tw-prose-pre-bg: var(--surface);
+  --tw-prose-pre-code: var(--text);
+  --tw-prose-quotes: var(--text-muted);
+  --tw-prose-quote-borders: var(--color-primary);
+  --tw-prose-counters: var(--text-muted);
+  --tw-prose-bullets: var(--color-primary);
+  --tw-prose-hr: var(--border);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border);
+}
+
+.prose :where(code):not(:where(pre *)) {
+  background: var(--surface-raised);
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-weight: 400;
+}
+
+.prose :where(code):not(:where(pre *))::before,
+.prose :where(code):not(:where(pre *))::after {
+  content: none;
+}
+
+.prose :where(pre) {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+/* ── Utility classes ──────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent), var(--color-secondary));
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+.glow {
+  box-shadow: 0 0 20px color-mix(in srgb, var(--color-primary) 30%, transparent),
+              0 0 60px color-mix(in srgb, var(--color-primary) 10%, transparent);
+}

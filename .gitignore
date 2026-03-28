@@ -10,6 +10,10 @@ CLAUDE.local.md
 
 # Astro build output
 dist/
+.astro/
+
+# Dependencies
+node_modules/
 
 # Environment files
 .env

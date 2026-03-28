@@ -1,0 +1,29 @@
+---
+interface Props {
+  tags: string[];
+  linkable?: boolean;
+  size?: 'sm' | 'md';
+}
+
+const { tags, linkable = false, size = 'sm' } = Astro.props;
+
+const sizeClasses = {
+  sm: 'px-2.5 py-0.5 text-xs',
+  md: 'px-3 py-1 text-sm',
+};
+---
+
+<div class="flex flex-wrap gap-2">
+  {tags.map((tag) => {
+    const classes = `${sizeClasses[size]} rounded-full font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20 transition-colors`;
+    return linkable ? (
+      <a href={`/blog/?tag=${tag}`} class={classes}>
+        {tag}
+      </a>
+    ) : (
+      <span class={classes}>
+        {tag}
+      </span>
+    );
+  })}
+</div>
