@@ -1,0 +1,210 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+const resumeEntries = await getCollection('resume');
+const sorted = resumeEntries.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
+
+const experience = sorted.filter((e) => e.data.section === 'experience');
+const education = sorted.filter((e) => e.data.section === 'education');
+const skills = sorted.filter((e) => e.data.section === 'skills');
+
+function formatDate(date?: Date | null): string {
+  if (!date) return 'Present';
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+}
+
+const sections = [
+  { id: 'experience', label: 'Experience' },
+  { id: 'education', label: 'Education' },
+  { id: 'skills', label: 'Skills' },
+];
+---
+
+<BaseLayout title="CV" description="Jon Mooney's professional CV — 15 years in defense systems engineering, algorithm development, and image processing.">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+    <!-- Page title -->
+    <h1 class="text-2xl lg:text-3xl font-display font-800 tracking-tight mb-6">
+      Curriculum <span class="gradient-text">Vitae</span>
+    </h1>
+
+    <div class="lg:grid lg:grid-cols-[240px_1fr] lg:gap-10">
+      <!-- Sticky sidebar navigation (desktop only) -->
+      <aside class="hidden lg:block">
+        <nav class="sticky top-24 self-start" aria-label="CV sections">
+          <ul class="space-y-1">
+            {sections.map(({ id, label }) => (
+              <li>
+                <a
+                  href={`#${id}`}
+                  class="sidebar-link block px-4 py-2 text-sm font-medium rounded-lg text-[var(--text-muted)] border-l-4 border-transparent hover:text-[var(--text)] hover:bg-[var(--surface)] transition-colors"
+                  data-section={id}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <!-- Decorative dots -->
+          <div class="mt-8 ml-4 flex gap-2">
+            <span class="w-2 h-2 rounded-full bg-[var(--color-primary)] opacity-60"></span>
+            <span class="w-2 h-2 rounded-full bg-[var(--color-secondary)] opacity-60"></span>
+            <span class="w-2 h-2 rounded-full bg-[var(--color-accent)] opacity-60"></span>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Content area -->
+      <div class="max-w-[780px]">
+        <!-- Experience section -->
+        <section id="experience" class="mb-8 scroll-mt-24">
+          <h2 class="text-base font-display font-700 uppercase tracking-wider text-[var(--text)] mb-3">
+            Experience
+          </h2>
+          <div class="space-y-3">
+            {experience.map(async (entry) => {
+              const { Content } = await render(entry);
+              return (
+                <div class="relative rounded-xl bg-[var(--surface-raised)] border border-[var(--border)] p-4 pl-6 overflow-hidden">
+                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-[var(--color-primary)]" />
+                  <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-1">
+                    <h3 class="text-xs font-display font-semibold text-[var(--text)]">{entry.data.title}</h3>
+                    <span class="text-xs font-mono text-[var(--text-muted)] shrink-0">
+                      {formatDate(entry.data.startDate)} — {formatDate(entry.data.endDate)}
+                    </span>
+                  </div>
+                  {entry.data.organization && (
+                    <p class="text-sm text-[var(--color-secondary)] font-medium mb-0.5">{entry.data.organization}</p>
+                  )}
+                  {entry.data.specialty && (
+                    <p class="text-sm text-[var(--color-accent)] mb-2">{entry.data.specialty}</p>
+                  )}
+                  <div class="prose prose-sm max-w-none text-[var(--text-muted)] cv-prose">
+                    <Content />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <!-- Education section -->
+        <section id="education" class="mb-8 scroll-mt-24">
+          <h2 class="text-base font-display font-700 uppercase tracking-wider text-[var(--text)] mb-3">
+            Education
+          </h2>
+          <div class="space-y-3">
+            {education.map(async (entry) => {
+              const { Content } = await render(entry);
+              return (
+                <div class="relative rounded-xl bg-[var(--surface-raised)] border border-[var(--border)] p-4 pl-6 overflow-hidden">
+                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-[var(--color-secondary)]" />
+                  <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-1">
+                    <h3 class="text-xs font-display font-semibold text-[var(--text)]">{entry.data.title}</h3>
+                    <span class="text-xs font-mono text-[var(--text-muted)] shrink-0">
+                      {formatDate(entry.data.startDate)} — {formatDate(entry.data.endDate)}
+                    </span>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2">
+                    {entry.data.organization && (
+                      <p class="text-sm text-[var(--color-secondary)] font-medium">{entry.data.organization}</p>
+                    )}
+                    {entry.data.location && (
+                      <p class="text-sm text-[var(--text-muted)]">{entry.data.location}</p>
+                    )}
+                  </div>
+                  <div class="prose prose-sm max-w-none text-[var(--text-muted)] cv-prose">
+                    <Content />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <!-- Skills section -->
+        <section id="skills" class="mb-8 scroll-mt-24">
+          <h2 class="text-base font-display font-700 uppercase tracking-wider text-[var(--text)] mb-3">
+            Skills
+          </h2>
+          <div class="space-y-3">
+            {skills.map(async (entry) => {
+              const { Content } = await render(entry);
+              return (
+                <div class="relative rounded-xl bg-[var(--surface-raised)] border border-[var(--border)] p-4 pl-6 overflow-hidden">
+                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-[var(--color-accent)]" />
+                  <h3 class="text-xs font-display font-semibold text-[var(--text)] mb-2">{entry.data.title}</h3>
+                  <div class="prose prose-sm max-w-none text-[var(--text-muted)] cv-prose">
+                    <Content />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  /* Tighter prose inside CV cards */
+  .cv-prose :global(p) {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.5;
+    font-size: 0.8rem;
+  }
+  .cv-prose :global(ul) {
+    margin-top: 0.125rem;
+    margin-bottom: 0;
+    padding-left: 1.25rem;
+  }
+  .cv-prose :global(li) {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+  .cv-prose :global(li p) {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .cv-prose :global(li::marker) {
+    font-size: 0.65rem;
+  }
+</style>
+
+<script>
+  function initSidebarNav() {
+    const links = document.querySelectorAll<HTMLAnchorElement>('.sidebar-link');
+    const sections = document.querySelectorAll<HTMLElement>('section[id]');
+
+    if (!links.length || !sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            links.forEach((link) => {
+              const isActive = link.dataset.section === id;
+              link.classList.toggle('text-[var(--color-primary)]', isActive);
+              link.classList.toggle('border-l-[var(--color-primary)]', isActive);
+              link.classList.toggle('bg-[var(--color-primary)]/5', isActive);
+              link.classList.toggle('text-[var(--text-muted)]', !isActive);
+              link.classList.toggle('border-transparent', !isActive);
+            });
+          }
+        });
+      },
+      { rootMargin: '-80px 0px -60% 0px', threshold: 0 }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+  }
+
+  initSidebarNav();
+  document.addEventListener('astro:after-swap', initSidebarNav);
+</script>

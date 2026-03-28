@@ -36,7 +36,9 @@ const resume = defineCollection({
   schema: z.object({
     section: z.enum(['about', 'experience', 'education', 'skills', 'certifications']),
     title: z.string(),
+    specialty: z.string().optional(),
     organization: z.string().optional(),
+    location: z.string().optional(),
     startDate: z.coerce.date().optional(),
     endDate: z.coerce.date().nullable().optional(),
     sortOrder: z.number(),

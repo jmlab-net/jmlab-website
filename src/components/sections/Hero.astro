@@ -1,7 +1,7 @@
 ---
 ---
 
-<section class="relative min-h-[85vh] flex items-center overflow-hidden">
+<section class="relative flex items-center overflow-hidden">
   <!-- Animated background -->
   <div class="absolute inset-0 -z-10">
     <!-- Grid pattern -->
@@ -12,64 +12,76 @@
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[var(--color-accent)] rounded-full blur-[128px] opacity-10"></div>
   </div>
 
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-    <div class="max-w-3xl">
-      <!-- Eyebrow -->
-      <div class="reveal flex items-center gap-3 mb-6">
-        <div class="h-px w-12 bg-[var(--color-primary)]"></div>
-        <span class="text-sm font-mono text-[var(--color-primary)] tracking-wider uppercase">
-          Developer &middot; Builder &middot; Automator
-        </span>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-14">
+    <div class="grid lg:grid-cols-[1fr_auto] gap-12 items-center">
+      <!-- Text content -->
+      <div class="max-w-3xl">
+        <!-- Eyebrow -->
+        <div class="reveal flex items-center gap-3 mb-5">
+          <div class="h-px w-12 bg-[var(--color-primary)]"></div>
+          <span class="text-sm font-mono text-[var(--color-primary)] tracking-wider uppercase">
+            Systems Engineer &middot; Algorithm Developer &middot; Homelab Enthusiast
+          </span>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="reveal font-display font-800 tracking-tight leading-[1.05] hero-title">
+          Algorithms by day. <span class="gradient-text">Homelab by night.</span>
+        </h1>
+
+        <!-- Subhead -->
+        <p class="reveal mt-5 text-lg text-[var(--text-muted)] max-w-2xl leading-relaxed">
+          15 years building image processing algorithms at Lockheed Martin.
+          Now integrating AI into everything — from defense workflows to a self-hosted
+          stack that runs my content pipeline, automates deployments, and keeps getting smarter.
+        </p>
+
+        <!-- CTAs -->
+        <div class="reveal mt-8 flex flex-wrap gap-4">
+          <a
+            href="/projects/"
+            class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-primary)] font-semibold hover:bg-[var(--color-primary-light)] transition-colors duration-200"
+            style="color: #050505;"
+          >
+            View Projects
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+          <a
+            href="/cv/"
+            class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-[var(--border)] text-[var(--text)] font-semibold hover:border-[var(--color-primary)]/50 hover:bg-[var(--surface-raised)] transition-all duration-200"
+          >
+            View CV
+          </a>
+        </div>
       </div>
 
-      <!-- Headline -->
-      <h1 class="reveal font-display font-800 tracking-tight">
-        I build things that
-        <span class="gradient-text">build themselves</span>
-      </h1>
-
-      <!-- Subhead -->
-      <p class="reveal mt-6 text-xl text-[var(--text-muted)] max-w-2xl leading-relaxed">
-        Software engineer obsessed with automation, self-hosting, and making
-        machines do the boring parts. Currently building AI content pipelines
-        and maintaining a homelab that runs 15+ services.
-      </p>
-
-      <!-- CTAs -->
-      <div class="reveal mt-10 flex flex-wrap gap-4">
-        <a
-          href="/projects/"
-          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-primary)] text-[var(--color-on-primary)] font-semibold hover:bg-[var(--color-primary-light)] transition-colors duration-200"
-        >
-          View Projects
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
-        </a>
-        <a
-          href="/blog/"
-          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-[var(--border)] text-[var(--text)] font-semibold hover:border-[var(--color-primary)]/50 hover:bg-[var(--surface-raised)] transition-all duration-200"
-        >
-          Read the Blog
-        </a>
-      </div>
-
-      <!-- Stats -->
-      <div class="reveal mt-16 flex gap-8 sm:gap-12">
-        <div>
-          <div class="text-3xl font-display font-800 text-[var(--color-primary)]">15+</div>
-          <div class="text-sm text-[var(--text-muted)] mt-1">Self-hosted services</div>
+      <!-- Domain cards — right side -->
+      <div class="reveal hidden lg:grid grid-cols-2 gap-3 w-[320px]">
+        <div class="p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--color-primary)]/30 transition-colors">
+          <div class="text-2xl mb-2">🎯</div>
+          <p class="text-xs font-display font-700 text-[var(--text)]">Image Processing</p>
+          <p class="text-[0.7rem] text-[var(--text-muted)] mt-1 leading-snug">Dual-band algorithms for threat detection & tracking</p>
         </div>
-        <div>
-          <div class="text-3xl font-display font-800 text-[var(--color-secondary)]">99.7%</div>
-          <div class="text-sm text-[var(--text-muted)] mt-1">Homelab uptime</div>
+        <div class="p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--color-secondary)]/30 transition-colors">
+          <div class="text-2xl mb-2">🧮</div>
+          <p class="text-xs font-display font-700 text-[var(--text)]">Simulation & Modeling</p>
+          <p class="text-[0.7rem] text-[var(--text-muted)] mt-1 leading-snug">System-level performance assessment & threat modeling</p>
         </div>
-        <div>
-          <div class="text-3xl font-display font-800 text-[var(--color-accent)]">$0</div>
-          <div class="text-sm text-[var(--text-muted)] mt-1">Monthly hosting cost</div>
+        <div class="p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--color-accent)]/30 transition-colors">
+          <div class="text-2xl mb-2">🏠</div>
+          <p class="text-xs font-display font-700 text-[var(--text)]">Self-Hosting</p>
+          <p class="text-[0.7rem] text-[var(--text-muted)] mt-1 leading-snug">15+ services on Unraid — AI, storage, automation</p>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--color-primary)]/30 transition-colors">
+          <div class="text-2xl mb-2">⚡</div>
+          <p class="text-xs font-display font-700 text-[var(--text)]">Automation</p>
+          <p class="text-[0.7rem] text-[var(--text-muted)] mt-1 leading-snug">n8n pipelines, AI content generation, zero-touch deploys</p>
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
@@ -92,3 +104,9 @@
   initReveal();
   document.addEventListener('astro:after-swap', initReveal);
 </script>
+
+<style>
+  .hero-title {
+    font-size: clamp(1.8rem, 3.2vw + 0.5rem, 3rem) !important;
+  }
+</style>
