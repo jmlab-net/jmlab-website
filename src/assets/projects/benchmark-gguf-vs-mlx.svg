@@ -15,10 +15,14 @@
   <rect width="960" height="420" rx="10" fill="#141419"/>
   <text x="480" y="25" text-anchor="middle" class="title">GGUF vs MLX Throughput</text>
   <text x="480" y="42" text-anchor="middle" class="sub">11 models tested in both formats on Apple Silicon · sorted by MLX advantage</text>
+
+  <!-- Legend -->
   <rect x="780" y="12" width="14" height="14" rx="3" fill="#4a9eed" opacity="0.8"/>
   <text x="798" y="23" class="leg">GGUF</text>
   <rect x="842" y="12" width="14" height="14" rx="3" fill="#22c55e" opacity="0.8"/>
   <text x="860" y="23" class="leg">MLX</text>
+
+  <!-- Y axis -->
   <line x1="65" y1="65" x2="65" y2="300" stroke="#333" stroke-width="1"/>
   <text x="18" y="182" text-anchor="middle" class="axis" transform="rotate(-90, 18, 182)">tokens / sec</text>
   <text x="59" y="303" text-anchor="end" class="axis">0</text>
@@ -35,16 +39,25 @@
   <text x="59" y="68" text-anchor="end" class="axis">150</text>
   <line x1="65" y1="65" x2="940" y2="65" stroke="#333" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.4"/>
   <line x1="65" y1="300" x2="940" y2="300" stroke="#333" stroke-width="1"/>
+
+  <!-- Divider between MLX-faster and GGUF-faster -->
   <line x1="542" y1="60" x2="542" y2="305" stroke="#555" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
   <text x="534" y="57" text-anchor="end" class="divider-label" fill="#22c55e" opacity="0.7">MLX FASTER ←</text>
   <text x="550" y="57" text-anchor="start" class="divider-label" fill="#4a9eed" opacity="0.7">→ GGUF FASTER</text>
-  <rect x="76.9" y="260.2" width="25.5" height="39.8" rx="3" fill="#4a9eed" opacity="0.8"/>
-  <text x="89.7" y="256.2" text-anchor="middle" class="val" fill="#93c5fd">25.4</text>
-  <rect x="107.2" y="227.0" width="25.5" height="73.0" rx="3" fill="#22c55e" opacity="0.8"/>
-  <text x="119.9" y="223.0" text-anchor="middle" class="val" fill="#86efac">46.6</text>
+
+  <!-- Scale: bar height = tok/s * (235/150) = tok/s * 1.567, bar top = 300 - height -->
+  <!-- Bar width = 25.5, gap between pair = 4.8, gap between models = ~25 -->
+
+  <!-- 1. Qwen3.5 122B MoE: GGUF 31.7 → h=49.7, MLX 43.7 → h=68.5, +38% -->
+  <rect x="76.9" y="250.3" width="25.5" height="49.7" rx="3" fill="#4a9eed" opacity="0.8"/>
+  <text x="89.7" y="246.3" text-anchor="middle" class="val" fill="#93c5fd">31.7</text>
+  <rect x="107.2" y="231.5" width="25.5" height="68.5" rx="3" fill="#22c55e" opacity="0.8"/>
+  <text x="119.9" y="227.5" text-anchor="middle" class="val" fill="#86efac">43.7</text>
   <text x="104.8" y="314" text-anchor="middle" class="model">Qwen3.5 122B MoE</text>
-  <text x="104.8" y="328" text-anchor="middle" class="gain" fill="#22c55e">+83%</text>
+  <text x="104.8" y="328" text-anchor="middle" class="gain" fill="#22c55e">+38%</text>
   <text x="104.8" y="340" text-anchor="middle" class="acc">1.00 → 1.00</text>
+
+  <!-- 2. Mistral Small 24B: GGUF 22.4 → h=35.1, MLX 28.0 → h=43.9, +25% -->
   <rect x="156.5" y="264.9" width="25.5" height="35.1" rx="3" fill="#4a9eed" opacity="0.8"/>
   <text x="169.2" y="260.9" text-anchor="middle" class="val" fill="#93c5fd">22.4</text>
   <rect x="186.7" y="256.1" width="25.5" height="43.9" rx="3" fill="#22c55e" opacity="0.8"/>
@@ -52,6 +65,8 @@
   <text x="184.3" y="314" text-anchor="middle" class="model">Mistral Small 24B</text>
   <text x="184.3" y="328" text-anchor="middle" class="gain" fill="#22c55e">+25%</text>
   <text x="184.3" y="340" text-anchor="middle" class="acc">0.90 → 0.88</text>
+
+  <!-- 3. Phi-4 14B: GGUF 35.7 → h=55.9, MLX 43.1 → h=67.5, +21% -->
   <rect x="236.0" y="244.1" width="25.5" height="55.9" rx="3" fill="#4a9eed" opacity="0.8"/>
   <text x="248.8" y="240.1" text-anchor="middle" class="val" fill="#93c5fd">35.7</text>
   <rect x="266.2" y="232.5" width="25.5" height="67.5" rx="3" fill="#22c55e" opacity="0.8"/>
@@ -59,6 +74,8 @@
   <text x="263.9" y="314" text-anchor="middle" class="model">Phi-4 14B</text>
   <text x="263.9" y="328" text-anchor="middle" class="gain" fill="#22c55e">+21%</text>
   <text x="263.9" y="340" text-anchor="middle" class="acc">0.88 → 0.87</text>
+
+  <!-- 4. Llama 3.3 70B: GGUF 7.5 → h=11.8, MLX 9.0 → h=14.1, +20% -->
   <rect x="315.6" y="288.2" width="25.5" height="11.8" rx="3" fill="#4a9eed" opacity="0.8"/>
   <text x="328.3" y="284.2" text-anchor="middle" class="val" fill="#93c5fd">7.5</text>
   <rect x="345.8" y="285.9" width="25.5" height="14.1" rx="3" fill="#22c55e" opacity="0.8"/>
@@ -66,6 +83,8 @@
   <text x="343.4" y="314" text-anchor="middle" class="model">Llama 3.3 70B</text>
   <text x="343.4" y="328" text-anchor="middle" class="gain" fill="#22c55e">+20%</text>
   <text x="343.4" y="340" text-anchor="middle" class="acc">0.86 → 0.90</text>
+
+  <!-- 5. MiniMax M2.5 229B: GGUF 38.3 → h=60.0, MLX 45.7 → h=71.6, +19% -->
   <rect x="395.1" y="240.0" width="25.5" height="60.0" rx="3" fill="#4a9eed" opacity="0.8"/>
   <text x="407.8" y="236.0" text-anchor="middle" class="val" fill="#93c5fd">38.3</text>
   <rect x="425.3" y="228.4" width="25.5" height="71.6" rx="3" fill="#22c55e" opacity="0.8"/>
@@ -73,6 +92,8 @@
   <text x="423.0" y="314" text-anchor="middle" class="model">MiniMax M2.5 229B</text>
   <text x="423.0" y="328" text-anchor="middle" class="gain" fill="#22c55e">+19%</text>
   <text x="423.0" y="340" text-anchor="middle" class="acc">0.98 → 0.98</text>
+
+  <!-- 6. DeepSeek V2 Lite: GGUF 127.1 → h=199.1, MLX 144.0 → h=225.6, +13% -->
   <rect x="474.7" y="100.9" width="25.5" height="199.1" rx="3" fill="#4a9eed" opacity="0.8"/>
   <text x="487.4" y="96.9" text-anchor="middle" class="val" fill="#93c5fd">127.1</text>
   <rect x="504.9" y="74.4" width="25.5" height="225.6" rx="3" fill="#22c55e" opacity="0.8"/>
@@ -80,6 +101,8 @@
   <text x="502.5" y="314" text-anchor="middle" class="model">DeepSeek V2 Lite</text>
   <text x="502.5" y="328" text-anchor="middle" class="gain" fill="#22c55e">+13%</text>
   <text x="502.5" y="340" text-anchor="middle" class="acc">0.82 → 0.85</text>
+
+  <!-- 7. GPT-OSS 120B: GGUF 65.9 → h=103.2, MLX 63.6 → h=99.6, -3% -->
   <rect x="554.2" y="196.8" width="25.5" height="103.2" rx="3" fill="#4a9eed" opacity="0.8"/>
   <text x="566.9" y="192.8" text-anchor="middle" class="val" fill="#93c5fd">65.9</text>
   <rect x="584.4" y="200.4" width="25.5" height="99.6" rx="3" fill="#22c55e" opacity="0.8"/>
@@ -87,6 +110,8 @@
   <text x="582.0" y="314" text-anchor="middle" class="model">GPT-OSS 120B</text>
   <text x="582.0" y="328" text-anchor="middle" class="gain" fill="#ef4444">-3%</text>
   <text x="582.0" y="340" text-anchor="middle" class="acc">0.95 → 0.98</text>
+
+  <!-- 8. Llama 4 Scout: GGUF 24.3 → h=38.1, MLX 21.6 → h=33.8, -11% -->
   <rect x="633.8" y="261.9" width="25.5" height="38.1" rx="3" fill="#4a9eed" opacity="0.8"/>
   <text x="646.5" y="257.9" text-anchor="middle" class="val" fill="#93c5fd">24.3</text>
   <rect x="664.0" y="266.2" width="25.5" height="33.8" rx="3" fill="#22c55e" opacity="0.8"/>
@@ -94,6 +119,8 @@
   <text x="661.6" y="314" text-anchor="middle" class="model">Llama 4 Scout</text>
   <text x="661.6" y="328" text-anchor="middle" class="gain" fill="#ef4444">-11%</text>
   <text x="661.6" y="340" text-anchor="middle" class="acc">0.93 → 0.90</text>
+
+  <!-- 9. DeepSeek R1 32B: GGUF 15.8 → h=24.8, MLX 12.5 → h=19.6, -21% -->
   <rect x="713.3" y="275.2" width="25.5" height="24.8" rx="3" fill="#4a9eed" opacity="0.8"/>
   <text x="726.0" y="271.2" text-anchor="middle" class="val" fill="#93c5fd">15.8</text>
   <rect x="743.5" y="280.4" width="25.5" height="19.6" rx="3" fill="#22c55e" opacity="0.8"/>
@@ -101,6 +128,8 @@
   <text x="741.1" y="314" text-anchor="middle" class="model">DeepSeek R1 32B</text>
   <text x="741.1" y="328" text-anchor="middle" class="gain" fill="#ef4444">-21%</text>
   <text x="741.1" y="340" text-anchor="middle" class="acc">0.88 → 0.91</text>
+
+  <!-- 10. Qwen2.5 14B 1M: GGUF 36.5 → h=57.2, MLX 26.6 → h=41.7, -27% -->
   <rect x="792.8" y="242.8" width="25.5" height="57.2" rx="3" fill="#4a9eed" opacity="0.8"/>
   <text x="805.6" y="238.8" text-anchor="middle" class="val" fill="#93c5fd">36.5</text>
   <rect x="823.1" y="258.3" width="25.5" height="41.7" rx="3" fill="#22c55e" opacity="0.8"/>
@@ -108,6 +137,8 @@
   <text x="820.7" y="314" text-anchor="middle" class="model">Qwen2.5 14B 1M</text>
   <text x="820.7" y="328" text-anchor="middle" class="gain" fill="#ef4444">-27%</text>
   <text x="820.7" y="340" text-anchor="middle" class="acc">0.88 → 0.91</text>
+
+  <!-- 11. Qwen2.5 VL 7B: GGUF 69.8 → h=109.4, MLX 38.1 → h=59.7, -45% -->
   <rect x="872.4" y="190.6" width="25.5" height="109.4" rx="3" fill="#4a9eed" opacity="0.8"/>
   <text x="885.1" y="186.6" text-anchor="middle" class="val" fill="#93c5fd">69.8</text>
   <rect x="902.6" y="240.3" width="25.5" height="59.7" rx="3" fill="#22c55e" opacity="0.8"/>
@@ -115,7 +146,9 @@
   <text x="900.2" y="314" text-anchor="middle" class="model">Qwen2.5 VL 7B</text>
   <text x="900.2" y="328" text-anchor="middle" class="gain" fill="#ef4444">-45%</text>
   <text x="900.2" y="340" text-anchor="middle" class="acc">0.90 → 0.91</text>
+
+  <!-- Footer -->
   <text x="65" y="356" class="acc">Speed change shown in green (MLX faster) or red (GGUF faster) · Accuracy change shown below</text>
   <rect x="65" y="370" width="875" height="38" rx="6" fill="#1e1e2e" stroke="#333" stroke-width="1"/>
-  <text x="502" y="392" text-anchor="middle" class="note">MLX faster for 6 of 11 models (up to +83%) · GGUF faster for 5 models (up to +45%) · Format advantage is architecture-dependent</text>
+  <text x="502" y="392" text-anchor="middle" class="note">MLX faster for 6 of 11 models (up to +38%) · GGUF faster for 5 models (up to +45%) · Format advantage is architecture-dependent</text>
 </svg>

@@ -1,6 +1,6 @@
 ---
-title: "Benchmarking Local LLMs on Apple Silicon"
-description: "A structured evaluation of 26 local LLMs across four benchmark categories on an M5 MacBook Pro, with two-layer scoring and persistent results"
+title: "Benchmarking Local LLMs on the M5 MacBook Pro"
+description: "Testing what 128 GB of Apple Silicon can do: 14 local LLMs benchmarked in GGUF and MLX across four categories on an M5 MacBook Pro"
 technologies: ["n8n", "javascript", "python", "postgresql", "docker", "bash"]
 featured: true
 sortOrder: 1
@@ -8,38 +8,47 @@ sortOrder: 1
 
 ## Abstract
 
-No structured framework exists for evaluating local LLMs running on consumer Apple Silicon hardware. This project presents an automated benchmarking pipeline that evaluated 26 models across four categories (GSM8K, HumanEval, MMLU, IFEval) using two-layer scoring — deterministic automated validation combined with independent five-dimension rubric review. Across two evaluation stages totaling over 2,400 scored prompt runs at three temperatures on an M5 MacBook Pro with 128 GB unified memory, the top Stage 2 performers — Nemotron Super ~120B and MiniMax M2.5 229B (MLX) — each achieved a 0.98 rubric average, while Qwen2.5 VL 7B delivered 0.90 accuracy at 69.8 tokens/second — 3x faster than comparably accurate models at a fraction of the parameter count.
-
-<!-- Data note: Stage 1 tested 17 models (1,020 runs), Stage 2 tested 24 models (1,440 runs) with overlap. Qwen3.5 122B MoE achieved 1.00 in Stage 1 but was not retested in Stage 2. Combined unique models: 26. -->
+The M5 MacBook Pro with 128 GB of unified memory represents a new tier of consumer hardware for local LLM inference. This project presents an automated benchmarking pipeline that evaluated 14 models across four categories (GSM8K, HumanEval, MMLU, IFEval) in both GGUF and MLX formats where available, using two-layer scoring — deterministic automated validation combined with independent five-dimension rubric review. Across over 2,400 scored prompt runs at three temperatures, the top performers — Qwen3.5 122B MoE (1.00 rubric average), Nemotron Super ~120B and MiniMax M2.5 229B (MLX) (each 0.98) — demonstrated strong results from quantized local inference, while Qwen2.5 VL 7B delivered 0.90 accuracy at 69.8 tokens/second — 3x faster than comparably accurate models at a fraction of the parameter count.
 
 ## Introduction
 
-Consumer Apple Silicon hardware can now run large language models locally with meaningful throughput. The M5 MacBook Pro with 128 GB of unified memory supports models up to 229 billion parameters via quantized inference in LM Studio. However, no standardized methodology exists for comparing these models in a local inference context. Existing public benchmarks — [LMSYS Chatbot Arena](https://chat.lmsys.org/), [Open LLM Leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard) — evaluate cloud-hosted, full-precision models under conditions that do not reflect local quantized inference on consumer hardware.
+Consumer Apple Silicon hardware can now run large language models locally with meaningful throughput. The M5 MacBook Pro with 128 GB of unified memory supports models up to 229 billion parameters via quantized inference in LM Studio. This project set out to answer a practical question: across a wide range of open-weight models, what accuracy and throughput can you actually expect from local inference on this hardware?
 
-This project addresses that gap with an automated, reproducible pipeline that:
+To test this systematically, the project uses an automated pipeline that:
 
 1. Benchmarks local models across four established evaluation categories
 2. Applies a two-layer scoring methodology separating deterministic validation from qualitative assessment
 3. Stores all results in a normalized relational schema for longitudinal comparison
 4. Runs end-to-end without manual intervention via workflow orchestration
 
-The pipeline evaluated 26 models ranging from 2.3 GB (Qwen3 4B, 4-bit MLX) to 101 GB (MiniMax M2.5 229B, Q3_K_XL GGUF), spanning four size tiers and two inference formats (GGUF and MLX).
+The pipeline evaluated 14 models — 11 tested in both GGUF and MLX formats — ranging from 4.8 GB (Qwen2.5 VL 7B, Q4_K_M GGUF) to 101 GB (MiniMax M2.5 229B, Q3_K_XL GGUF) across four size tiers.
+
+| Model | GGUF Quant | GGUF GB | GGUF Source | MLX Bits | MLX GB | MLX Source |
+|-------|------------|---------|-------------|----------|--------|------------|
+| MiniMax M2.5 229B | Q3_K_XL | 101.0 | MiniMax-M2.5-GGUF | 3-bit | 100.1 | mlx-community |
+| Nemotron Super ~120B | Q4_K_M | 85.0 | lmstudio-community | — | — | — |
+| Qwen3.5 122B MoE | Q4_K_S | 73.5 | unsloth | 4-bit | 69.6 | mlx-community |
+| Llama 4 Scout 109B MoE | Q4_K_M | 61.3 | lmstudio-community | 4-bit | 61.1 | mlx-community |
+| GPT-OSS 120B | MXFP4 | 58.5 | lmstudio-community | MXFP4 | 63.4 | mlx-community |
+| Llama 3.3 70B | Q4_K_M | 39.7 | lmstudio-community | 4-bit | 39.7 | mlx-community |
+| Qwen2.5 Coder 32B | — | — | — | 4-bit | 18.3 | mlx-community |
+| DeepSeek R1 32B | Q4_K_M | 18.0 | lmstudio-community | 4-bit | 18.4 | mlx-community |
+| Mistral Small 24B | Q4_K_M | 13.5 | lmstudio-community | 4-bit | 14.1 | mlx-community |
+| Qwen2.5 14B 1M | Q4_K_M | 8.3 | lmstudio-community | 8-bit | 15.7 | mlx-community |
+| DeepSeek Coder V2 Lite | Q4_K_M | 8.8 | lmstudio-community | 4-bit | 8.8 | mlx-community |
+| Phi-4 14B | Q4_K_M | 7.9 | lmstudio-community | 4-bit | 8.3 | mlx-community |
+| Qwen2.5 Coder 7B | — | — | — | 8-bit | 8.1 | mlx-community |
+| Qwen2.5 VL 7B | Q4_K_M | 4.8 | lmstudio-community | 8-bit | 9.0 | mlx-community |
 
 ## Methodology
 
-### Test Harness Architecture
+### Test Architecture
 
-The pipeline consists of two n8n workflows running in Docker on an Unraid server, communicating with the MacBook Pro over the local network via SSH and HTTP.
+The pipeline is an n8n workflow running in Docker on an Unraid server, communicating with the MacBook Pro over the local network via SSH and HTTP.
 
-![Benchmark Pipeline Flow](../../assets/projects/benchmark-pipeline-flow.svg)
+![n8n Benchmark Runner workflow](../../assets/projects/benchmark-workflow-screenshot.png)
 
-**Workflow 1 — Benchmark Runner** (14 nodes): Iterates through each model sequentially. For each model, the workflow SSH-es into the MacBook Pro to load the model via `lms load <model_id> --context-length N`, executes 20 prompts against LM Studio's OpenAI-compatible API (`/v1/chat/completions`), applies Layer 1 automated scoring (deterministic pass/fail), persists results to PostgreSQL, posts progress to Mattermost, and unloads the model via `lms unload --all` before proceeding to the next. After all models complete, a separate Layer 2 rubric review is performed by Claude (via API), scoring each stored response across five qualitative dimensions.
-
-![Benchmark runner sequence — one model pass through the pipeline](../../assets/projects/benchmark-runner-sequence.svg)
-
-**Workflow 2 — Documentation Generator**: Clones a Gitea repository, runs five sequential LLM sessions per model (file tree analysis, core architecture, component interfaces, README generation, LLM context file), and auto-commits output to per-model branches. This serves as both a documentation tool and a real-world benchmark of structured code reasoning.
-
-![Documentation generator — 5 sequential LLM sessions per model](../../assets/projects/benchmark-docgen-flow.svg)
+The workflow iterates through each model sequentially. For each model, it SSH-es into the MacBook Pro to load the model via `lms load <model_id> --context-length N`, executes 20 prompts against LM Studio's OpenAI-compatible API (`/v1/chat/completions`), applies Layer 1 automated scoring (deterministic pass/fail), persists results to PostgreSQL, posts progress to Mattermost, and unloads the model via `lms unload --all` before proceeding to the next. After all models complete, a separate Layer 2 rubric review is performed by Claude (via API), scoring each stored response across five qualitative dimensions.
 
 ### Benchmark Selection
 
@@ -113,7 +122,7 @@ The following table documents each pipeline file's role:
 | `models.md` | Runner | Model registry (tier, format, quant, RAM) |
 | `troubleshooting.md` | Ops | Failure modes, root causes, fixes |
 
-Full prompt templates are available in the [project repository (TBD)].
+Full prompt templates are available in the project repository (link coming soon).
 
 ### Scoring Framework
 
@@ -168,13 +177,13 @@ All results are persisted in PostgreSQL across five normalized tables:
 
 ![Database ER diagram — 5 normalized tables with foreign key relationships](../../assets/projects/benchmark-er-diagram.svg)
 
-The `prompt_results` table stores the model's raw response alongside the automated score and category-specific `score_detail` JSON. The `response_scores` table stores the independent rubric review. The `thinking_text` column in `prompt_results` captures extracted `<think>...</think>` blocks from reasoning models (11 of 26 models emit chain-of-thought), stored separately from the response text.
+The `prompt_results` table stores the model's raw response alongside the automated score and category-specific `score_detail` JSON. The `response_scores` table stores the independent rubric review. The `thinking_text` column in `prompt_results` captures extracted `<think>...</think>` blocks from reasoning models (11 of 14 models emit chain-of-thought), stored separately from the response text.
 
 ### Hardware Configuration
 
 **Inference host:** M5 MacBook Pro, Apple M5 chip, 128 GB unified memory. Models served via LM Studio's OpenAI-compatible API on the local network.
 
-**Orchestration host:** Unraid server running n8n v2.37.4 (Docker), PostgreSQL 16, Mattermost (notifications), and Gitea (repository hosting for the documentation generator workflow).
+**Orchestration host:** Unraid server running n8n v2.37.4 (Docker), PostgreSQL 16, and Mattermost (notifications).
 
 **Network:** SSH over the local network for model load/unload commands. HTTP for inference API calls. SSH key authentication with the key mounted in the n8n container.
 
@@ -182,11 +191,11 @@ The `prompt_results` table stores the model's raw response alongside the automat
 
 ![Model Performance Tradeoffs](../../assets/projects/benchmark-model-tradeoffs.svg)
 
-Evaluation proceeded in two stages. Stage 1 tested 17 models across three temperatures, producing 1,020 scored prompt responses. Stage 2 expanded to 24 models (adding MLX variants and new models), producing 1,440 scored prompt responses. Across both stages, 26 unique models completed evaluation. The tables below use Stage 2 data where available; Qwen3.5 122B MoE results are from Stage 1 (the model was not retested in Stage 2).
+The pipeline evaluated 14 models across three temperatures — 11 in both GGUF and MLX formats — producing over 2,400 scored prompt responses. Results are presented below by inference format.
 
 ### Overall Performance
 
-In Stage 2, the top performers were Nemotron Super ~120B and MiniMax M2.5 229B (MLX), each achieving a 0.98 rubric average. In the earlier Stage 1 evaluation, both variants of Qwen3.5 122B MoE achieved a perfect 1.00 rubric average — scoring 15.0/15 across all four categories — but these results are not directly comparable as the two stages used separate evaluation runs.
+The top performers were Qwen3.5 122B MoE, which achieved a perfect 1.00 rubric average — scoring 15.0/15 across all four categories — followed by Nemotron Super ~120B and MiniMax M2.5 229B (MLX), each at 0.98.
 
 The efficiency standout was Qwen2.5 VL 7B (GGUF Q4_K_M), which achieved 0.90 rubric accuracy at 69.8 tokens/second with a 4.8 GB model file — 3x faster than Mistral Small 24B at the same accuracy level, using one-third the disk space.
 
@@ -194,8 +203,8 @@ The efficiency standout was Qwen2.5 VL 7B (GGUF Q4_K_M), which achieved 0.90 rub
 
 | Model | GB | Quant | tok/s | Avg | Best |
 |-------|----|-------|-------|-----|------|
-| Qwen3.5 122B MoE | — | Q4_K_S | 25.4 | 1.00 | All (Stage 1) |
-| Nemotron Super ~120B | ~67.5 | Q4_K_M | 27.6 | 0.98 | GSM8K |
+| Qwen3.5 122B MoE | 73.5 | Q4_K_S | 31.7 | 1.00 | All |
+| Nemotron Super ~120B | 85.0 | Q4_K_M | 27.6 | 0.98 | GSM8K |
 | MiniMax M2.5 229B | 101.0 | Q3_K_XL | 38.3 | 0.98 | MMLU |
 | GPT-OSS 120B | 58.5 | MXFP4 | 65.9 | 0.95 | IFEval |
 | Llama 4 Scout 109B MoE | 61.3 | Q4_K_M | 24.3 | 0.93 | GSM8K |
@@ -211,9 +220,9 @@ The efficiency standout was Qwen2.5 VL 7B (GGUF Q4_K_M), which achieved 0.90 rub
 
 | Model | GB | Bits | tok/s | Avg | Best |
 |-------|----|------|-------|-----|------|
-| Qwen3.5 122B MoE | — | 4-bit | 46.6 | 1.00 | All (Stage 1) |
-| MiniMax M2.5 229B | — | 3-bit | 45.7 | 0.98 | GSM8K |
-| GPT-OSS 120B | — | MXFP4 | 63.6 | 0.98 | GSM8K |
+| Qwen3.5 122B MoE | 69.6 | 4-bit | 43.7 | 1.00 | All |
+| MiniMax M2.5 229B | 100.1 | 3-bit | 45.7 | 0.98 | GSM8K |
+| GPT-OSS 120B | 63.4 | MXFP4 | 63.6 | 0.98 | GSM8K |
 | DeepSeek R1 32B | 18.4 | 4-bit | 12.5 | 0.91 | HumanEval |
 | Qwen2.5 Coder 32B | 18.3 | 4-bit | 19.4 | 0.91 | GSM8K |
 | Qwen2.5 14B 1M | 15.7 | 8-bit | 26.6 | 0.91 | MMLU |
@@ -221,25 +230,22 @@ The efficiency standout was Qwen2.5 VL 7B (GGUF Q4_K_M), which achieved 0.90 rub
 | Llama 3.3 70B | 39.7 | 4-bit | 9.0 | 0.90 | MMLU |
 | Llama 4 Scout 109B MoE | 61.1 | 4-bit | 21.6 | 0.90 | GSM8K |
 | Mistral Small 24B | 14.1 | 4-bit | 28.0 | 0.88 | GSM8K |
-| Phi-4 14B | — | 4-bit | 43.1 | 0.87 | GSM8K |
+| Phi-4 14B | 8.3 | 4-bit | 43.1 | 0.87 | GSM8K |
 | DeepSeek Coder V2 Lite | 8.8 | 4-bit | 144.0 | 0.85 | HumanEval |
-| Qwen3 4B | 2.3 | 4-bit | 142.8 | 0.85 | GSM8K |
 | Qwen2.5 Coder 7B | 8.1 | 8-bit | 54.0 | 0.83 | GSM8K |
 
 ### Per-Category Leaders
 
-<!-- Per-category data uses Stage 2 results. Qwen3.5 122B MoE (Stage 1) scored 1.00 across all categories but is excluded from this table to avoid cross-stage comparison. -->
-
 | Category | Leader | Score | Runner-up | Score |
 |----------|--------|-------|-----------|-------|
-| GSM8K | Llama 4 Scout / Nemotron Super / MiniMax MLX | 1.00 | Qwen2.5 Coder 32B / Phi-4 / DeepSeek R1 | 0.99 |
-| HumanEval | Nemotron Super ~120B | 0.99 | MiniMax M2.5 229B (MLX) | 0.98 |
-| MMLU | Nemotron / MiniMax (both) / GPT-OSS (both) | 1.00 | Qwen2.5 14B 1M (MLX) / Qwen2.5 VL 7B (MLX) | 0.93 |
-| IFEval | GPT-OSS 120B | 0.99 | GPT-OSS 120B (MLX) | 0.99 |
+| GSM8K | Qwen3.5 122B MoE (GGUF) | 1.00 | Llama 4 Scout, Nemotron, MiniMax (MLX) | 1.00 |
+| HumanEval | Qwen3.5 122B MoE (GGUF) | 1.00 | Nemotron Super ~120B | 0.99 |
+| MMLU | Qwen3.5 MoE, Nemotron, MiniMax, GPT-OSS | 1.00 | Qwen2.5 14B 1M, VL 7B (MLX) | 0.93 |
+| IFEval | Qwen3.5 122B MoE (MLX) | 1.00 | GPT-OSS 120B (both) | 0.99 |
 
 ### Speed-Accuracy Tradeoff
 
-Model performance spans from 2.3 GB / 142.8 tokens/second (Qwen3 4B, 0.85 rubric average) to 101 GB / 38.3 tokens/second (MiniMax M2.5 229B). The relationship between model size and accuracy is not linear — Qwen2.5 Coder 32B (18.3 GB, 0.91 accuracy) outperformed Llama 3.3 70B (39.7 GB, 0.86 accuracy) while running 2.6x faster.
+Model performance spans from 4.8 GB / 69.8 tokens/second (Qwen2.5 VL 7B, 0.90 rubric average) to 101 GB / 38.3 tokens/second (MiniMax M2.5 229B). The relationship between model size and accuracy is not linear — Qwen2.5 Coder 32B (18.3 GB, 0.91 accuracy) outperformed Llama 3.3 70B (39.7 GB, 0.86 accuracy) while running 2.6x faster.
 
 ### Format Comparison: GGUF vs MLX
 
@@ -247,7 +253,7 @@ Eleven models were tested in both GGUF and MLX quantizations. MLX variants achie
 
 | Model | GGUF tok/s | MLX tok/s | Speedup | Accuracy (GGUF → MLX) |
 |-------|------------|-----------|---------|----------------------|
-| Qwen3.5 122B MoE | 25.4 | 46.6 | +83% | 1.00 → 1.00 |
+| Qwen3.5 122B MoE | 31.7 | 43.7 | +38% | 1.00 → 1.00 |
 | MiniMax M2.5 229B | 38.3 | 45.7 | +19% | 0.98 → 0.98 |
 | DeepSeek Coder V2 Lite | 127.1 | 144.0 | +13% | 0.82 → 0.85 |
 | Mistral Small 24B | 22.4 | 28.0 | +25% | 0.90 → 0.88 |
@@ -259,7 +265,7 @@ Eleven models were tested in both GGUF and MLX quantizations. MLX variants achie
 | DeepSeek R1 32B | 15.8 | 12.5 | -21% | 0.88 → 0.91 |
 | Llama 4 Scout 109B MoE | 24.3 | 21.6 | -11% | 0.93 → 0.90 |
 
-Notable: MLX was faster for 6 of 11 models (up to +83% for Qwen3.5 122B MoE). However, GGUF Q4_K_M outperformed MLX 4-bit/8-bit for Qwen2.5 VL 7B (-45%), Qwen2.5 14B 1M (-27%), DeepSeek R1 32B (-21%), and Llama 4 Scout (-11%). The throughput advantage appears format- and architecture-dependent rather than universal.
+Notable: MLX was faster for 6 of 11 models (up to +38% for Qwen3.5 122B MoE). However, GGUF Q4_K_M outperformed MLX 4-bit/8-bit for Qwen2.5 VL 7B (-45%), Qwen2.5 14B 1M (-27%), DeepSeek R1 32B (-21%), and Llama 4 Scout (-11%). The throughput advantage appears format- and architecture-dependent rather than universal.
 
 ![GGUF vs MLX throughput comparison — same models, side by side](../../assets/projects/benchmark-gguf-vs-mlx.svg)
 
@@ -279,11 +285,11 @@ Storing results in PostgreSQL rather than flat files transformed the project fro
 
 ### Limitations
 
-This evaluation has several constraints. All inference ran on a single machine (M5 MacBook Pro, 128 GB unified memory), limiting the maximum model size to approximately 108 GB RAM. Quantized models (4-bit, 3-bit) were tested rather than full-precision weights, which may affect accuracy relative to published benchmarks. The prompt set (20 per model) is small compared to full benchmark suites (GSM8K contains 8,792 problems; HumanEval contains 164). Results reflect local inference characteristics and are not directly comparable to cloud-hosted evaluations. Stage 1 and Stage 2 results are not directly comparable as they represent separate evaluation runs; cross-stage comparisons should be interpreted with caution.
+This evaluation has several constraints. All inference ran on a single machine (M5 MacBook Pro, 128 GB unified memory), limiting the maximum model size to approximately 108 GB RAM. Quantized models (4-bit, 3-bit) were tested rather than full-precision weights, which may affect accuracy relative to published benchmarks. The prompt set (20 per model) is small compared to full benchmark suites (GSM8K contains 8,792 problems; HumanEval contains 164). Results reflect local inference characteristics and are not directly comparable to cloud-hosted evaluations.
 
 ### Future Work
 
-Planned extensions include automated re-runs triggered by new model releases (via n8n webhook + LM Studio model registry polling), expansion of the prompt set to 50+ per category, addition of multi-turn conversation benchmarks, and a web dashboard for interactive result exploration built on the existing PostgreSQL schema.
+Planned extensions include automated re-runs triggered by new model releases (via n8n webhook + LM Studio model registry polling), expansion of the prompt set to 50+ per category, addition of multi-turn conversation benchmarks, and a web dashboard for interactive result exploration built on the existing PostgreSQL schema. 
 
 ## References
 
@@ -298,7 +304,3 @@ Planned extensions include automated re-runs triggered by new model releases (vi
 5. LM Studio. Local LLM inference engine with OpenAI-compatible API. [https://lmstudio.ai](https://lmstudio.ai)
 
 6. n8n. Workflow automation platform. [https://n8n.io](https://n8n.io)
-
-7. LMSYS Chatbot Arena. Crowdsourced LLM evaluation platform. [https://chat.lmsys.org](https://chat.lmsys.org)
-
-8. Open LLM Leaderboard. Hugging Face model evaluation leaderboard. [https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard)

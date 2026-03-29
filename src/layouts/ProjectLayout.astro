@@ -169,7 +169,6 @@ const { title, description, technologies, liveUrl, repoUrl } = Astro.props;
     padding: 0.5rem 1rem;
     color: var(--text-muted);
     border-bottom: 1px solid var(--border);
-    white-space: nowrap;
   }
 
   .project-prose :global(tr:last-child td) {
@@ -200,6 +199,14 @@ const { title, description, technologies, liveUrl, repoUrl } = Astro.props;
     padding: 1rem;
     border-radius: 0.75rem;
     overflow-x: auto;
+  }
+
+  /* Images & SVGs */
+  .project-prose :global(img) {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0.5rem;
   }
 
   /* Sidebar nav styling */

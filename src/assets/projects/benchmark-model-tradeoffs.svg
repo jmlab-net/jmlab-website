@@ -12,9 +12,13 @@
   </style>
   <rect width="920" height="560" rx="12" fill="#141419"/>
   <text x="460" y="35" text-anchor="middle" class="title">Model Performance Tradeoffs</text>
-  <text x="460" y="55" text-anchor="middle" class="subtitle">26 Models · GGUF vs MLX · Size vs Speed vs Accuracy</text>
+  <text x="460" y="55" text-anchor="middle" class="subtitle">14 Models · GGUF vs MLX · Size vs Speed vs Accuracy</text>
+
+  <!-- Axes -->
   <line x1="90" y1="80" x2="90" y2="460" stroke="#333" stroke-width="1.5"/>
   <text x="35" y="270" text-anchor="middle" class="axis-label" transform="rotate(-90, 35, 270)">Rubric Avg</text>
+
+  <!-- Y ticks -->
   <line x1="85" y1="98" x2="95" y2="98" stroke="#444" stroke-width="1"/>
   <text x="80" y="102" text-anchor="end" class="tick">1.00</text>
   <line x1="85" y1="189" x2="95" y2="189" stroke="#444" stroke-width="1"/>
@@ -29,6 +33,8 @@
   <line x1="85" y1="460" x2="95" y2="460" stroke="#444" stroke-width="1"/>
   <text x="80" y="464" text-anchor="end" class="tick">0.80</text>
   <line x1="90" y1="460" x2="870" y2="460" stroke="#333" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
+
+  <!-- X axis -->
   <line x1="90" y1="460" x2="870" y2="460" stroke="#333" stroke-width="1.5"/>
   <text x="480" y="505" text-anchor="middle" class="axis-label">Tokens / sec</text>
   <text x="90" y="480" text-anchor="middle" class="tick">0</text>
@@ -44,6 +50,8 @@
   <text x="740" y="480" text-anchor="middle" class="tick">125</text>
   <line x1="870" y1="455" x2="870" y2="465" stroke="#444" stroke-width="1"/>
   <text x="870" y="480" text-anchor="middle" class="tick">150</text>
+
+  <!-- Tier bands -->
   <rect x="90" y="80" width="780" height="109" fill="#22c55e" opacity="0.03"/>
   <text x="875" y="138" class="tier-label" fill="#22c55e" opacity="0.6">Elite (≥0.95)</text>
   <rect x="90" y="189" width="780" height="90" fill="#4a9eed" opacity="0.03"/>
@@ -52,69 +60,132 @@
   <text x="875" y="328" class="tier-label" fill="#f59e0b" opacity="0.6">Good (0.85–0.89)</text>
   <rect x="90" y="370" width="780" height="90" fill="#ef4444" opacity="0.03"/>
   <text x="875" y="419" class="tier-label" fill="#ef4444" opacity="0.6">Fair (0.80–0.84)</text>
-  <!-- GGUF Models (squares) -->
-  <rect x="212.0" y="88.0" width="20.2" height="20.2" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="207.1" y="86.1" text-anchor="end" class="model-name" fill="#93c5fd">GGUF</text>
-  <text x="207.1" y="100.1" text-anchor="end" class="model-detail">25.4 tok/s</text>
-  <rect x="223.3" y="124.1" width="20.5" height="20.5" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="218.5" y="139.3" text-anchor="end" class="model-name" fill="#93c5fd">Nemotron Super</text>
-  <text x="218.5" y="153.3" text-anchor="end" class="model-detail">0.98 · 27.6 tok/s</text>
-  <rect x="277.3" y="122.4" width="23.8" height="23.8" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="304.2" y="139.3" text-anchor="start" class="model-name" fill="#93c5fd">MiniMax 229B</text>
-  <text x="304.2" y="153.3" text-anchor="start" class="model-detail">0.98 · 38.3 tok/s · 101 GB</text>
-  <rect x="423.0" y="178.9" width="19.4" height="19.4" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="447.7" y="180.6" text-anchor="start" class="model-name" fill="#93c5fd">GPT-OSS 120B</text>
-  <text x="447.7" y="194.6" text-anchor="start" class="model-detail">0.95 · 65.9 tok/s</text>
-  <rect x="206.5" y="214.9" width="19.7" height="19.7" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
-  <rect x="448.4" y="274.4" width="9.2" height="9.2" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="468.0" y="271.0" text-anchor="start" class="model-name" fill="#93c5fd">Qwen2.5 VL 7B</text>
-  <text x="468.0" y="285.0" text-anchor="start" class="model-detail">0.90 · 69.8 tok/s · 4.8 GB</text>
-  <rect x="200.5" y="273.1" width="12.0" height="12.0" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
-  <rect x="165.6" y="308.7" width="13.0" height="13.0" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
-  <rect x="274.6" y="310.0" width="10.5" height="10.5" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
-  <rect x="270.5" y="310.1" width="10.4" height="10.4" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
-  <rect x="120.6" y="343.0" width="16.9" height="16.9" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="129.0" y="371.4" text-anchor="middle" class="model-name" fill="#93c5fd">Llama 3.3 70B</text>
-  <text x="129.0" y="385.4" text-anchor="middle" class="model-detail">0.86 · 7.5 tok/s · 39.7 GB</text>
-  <rect x="745.6" y="418.5" width="10.6" height="10.6" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="735.9" y="428.8" text-anchor="end" class="model-name" fill="#93c5fd">DeepSeek V2 Lite</text>
-  <text x="735.9" y="442.8" text-anchor="end" class="model-detail">0.82 · 127.1 tok/s</text>
-  <!-- MLX Models (circles) -->
-  <circle cx="332.3" cy="98.1" r="11.9" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="347.3" y="90.1" text-anchor="start" class="model-name" fill="#86efac">Qwen3.5 122B MoE</text>
-  <text x="347.3" y="104.1" text-anchor="start" class="model-detail">1.00 avg · 46.6 tok/s</text>
-  <circle cx="327.6" cy="134.3" r="14.0" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <circle cx="420.7" cy="134.3" r="11.4" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="435.7" y="152.3" text-anchor="start" class="model-name" fill="#86efac">GPT-OSS (MLX)</text>
-  <text x="435.7" y="166.3" text-anchor="start" class="model-detail">0.98 · 63.6 tok/s</text>
-  <circle cx="155.0" cy="261.0" r="7.7" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <circle cx="190.9" cy="261.0" r="7.7" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <circle cx="228.3" cy="261.0" r="7.4" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <circle cx="288.1" cy="261.0" r="6.3" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <circle cx="136.8" cy="279.0" r="9.9" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <circle cx="202.3" cy="279.0" r="11.6" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <circle cx="235.6" cy="315.2" r="7.1" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <circle cx="314.1" cy="333.3" r="6.1" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <circle cx="838.8" cy="369.5" r="6.3" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="823.8" y="359.5" text-anchor="end" class="model-name" fill="#86efac">DeepSeek V2 Lite (MLX)</text>
-  <text x="823.8" y="373.5" text-anchor="end" class="model-detail">0.85 · 144.0 tok/s</text>
-  <circle cx="832.6" cy="369.5" r="4.7" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="817.6" y="381.5" text-anchor="end" class="model-name" fill="#86efac">Qwen3 4B</text>
-  <text x="817.6" y="395.5" text-anchor="end" class="model-detail">0.85 · 142.8 tok/s · 2.3 GB</text>
-  <circle cx="370.8" cy="405.7" r="6.1" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="385.8" y="410.7" text-anchor="start" class="model-name" fill="#86efac">Qwen2.5 Coder 7B</text>
-  <text x="385.8" y="424.7" text-anchor="start" class="model-detail">0.83 · 54.0 tok/s</text>
+
+  <!-- Scale: X = 90 + (tok/s / 150) * 780, Y = 460 - ((avg - 0.80) / 0.20) * 362 -->
+  <!-- Bubble size = sqrt(GB) * 1.6, min 5 -->
+
+  <!-- === GGUF Models (squares) === -->
+
+  <!-- Qwen3.5 122B MoE GGUF: 31.7 t/s, 1.00, 73.5 GB → x=254.6, y=98, sz=13.7 -->
+  <rect x="248" y="91" width="14" height="14" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="242" y="89" text-anchor="end" class="model-name" fill="#93c5fd">GGUF</text>
+  <text x="242" y="103" text-anchor="end" class="model-detail">31.7 tok/s</text>
+
+  <!-- Nemotron GGUF: 27.6, 0.98, 85 GB → x=233.4, y=134.4, sz=14.7 -->
+  <rect x="226" y="127" width="15" height="15" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="220" y="140" text-anchor="end" class="model-name" fill="#93c5fd">Nemotron Super</text>
+  <text x="220" y="154" text-anchor="end" class="model-detail">0.98 · 27.6 tok/s</text>
+
+  <!-- MiniMax GGUF: 38.3, 0.98, 101 GB → x=289, y=134.4, sz=16.1 -->
+  <rect x="281" y="126" width="16" height="16" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="302" y="140" text-anchor="start" class="model-name" fill="#93c5fd">MiniMax 229B</text>
+  <text x="302" y="154" text-anchor="start" class="model-detail">0.98 · 38.3 tok/s · 101 GB</text>
+
+  <!-- GPT-OSS GGUF: 65.9, 0.95, 58.5 GB → x=432, y=189, sz=12.2 -->
+  <rect x="426" y="183" width="12" height="12" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="444" y="178" text-anchor="start" class="model-name" fill="#93c5fd">GPT-OSS 120B</text>
+  <text x="444" y="192" text-anchor="start" class="model-detail">0.95 · 65.9 tok/s</text>
+
+  <!-- Llama 4 Scout GGUF: 24.3, 0.93, 61.3 GB → x=216.4, y=224.7, sz=12.5 -->
+  <rect x="210" y="219" width="13" height="13" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="228" y="217" text-anchor="start" class="model-name" fill="#93c5fd">Llama 4 Scout</text>
+  <text x="228" y="230" text-anchor="start" class="model-detail">0.93 · 24.3 tok/s</text>
+
+  <!-- Qwen2.5 VL 7B GGUF: 69.8, 0.90, 4.8 GB → x=453, y=279, sz=5 -->
+  <rect x="450" y="276" width="6" height="6" rx="1" fill="#4a9eed" opacity="0.7" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="462" y="273" text-anchor="start" class="model-name" fill="#93c5fd">Qwen2.5 VL 7B</text>
+  <text x="462" y="287" text-anchor="start" class="model-detail">0.90 · 69.8 tok/s · 4.8 GB</text>
+
+  <!-- Mistral Small GGUF: 22.4, 0.90, 13.5 GB → x=206.5, y=279, sz=5.9 -->
+  <rect x="204" y="276" width="6" height="6" rx="1" fill="#4a9eed" opacity="0.7" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="198" y="270" text-anchor="end" class="model-detail" fill="#93c5fd">Mistral Small</text>
+
+  <!-- DeepSeek R1 GGUF: 15.8, 0.88, 18 GB → x=172, y=315.2, sz=6.8 -->
+  <rect x="168" y="312" width="7" height="7" rx="1" fill="#4a9eed" opacity="0.7" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="162" y="308" text-anchor="end" class="model-detail" fill="#93c5fd">DeepSeek R1</text>
+
+  <!-- Qwen2.5 14B 1M GGUF: 36.5, 0.88, 8.3 GB → x=280, y=315.2, sz=5 -->
+  <rect x="277" y="312" width="6" height="6" rx="1" fill="#4a9eed" opacity="0.7" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="289" y="310" text-anchor="start" class="model-detail" fill="#93c5fd">Qwen2.5 14B 1M</text>
+
+  <!-- Phi-4 GGUF: 35.7, 0.88, 7.9 GB → x=275.6, y=315.2, sz=5 -->
+  <rect x="273" y="318" width="5" height="5" rx="1" fill="#4a9eed" opacity="0.7" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="267" y="332" text-anchor="end" class="model-detail" fill="#93c5fd">Phi-4</text>
+
+  <!-- Llama 3.3 70B GGUF: 7.5, 0.86, 39.7 GB → x=129, y=351.4, sz=10.1 -->
+  <rect x="124" y="346" width="10" height="10" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="129" y="370" text-anchor="middle" class="model-name" fill="#93c5fd">Llama 3.3 70B</text>
+  <text x="129" y="384" text-anchor="middle" class="model-detail">0.86 · 7.5 tok/s · 39.7 GB</text>
+
+  <!-- DS Coder V2 Lite GGUF: 127.1, 0.82, 8.8 GB → x=751, y=424, sz=5 -->
+  <rect x="748" y="421" width="6" height="6" rx="1" fill="#4a9eed" opacity="0.7" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="740" y="432" text-anchor="end" class="model-name" fill="#93c5fd">DeepSeek V2 Lite</text>
+  <text x="740" y="446" text-anchor="end" class="model-detail">0.82 · 127.1 tok/s</text>
+
+  <!-- === MLX Models (circles) === -->
+
+  <!-- Qwen3.5 122B MLX: 43.7, 1.00, 69.6 GB → x=317, y=98, r=13.3 -->
+  <circle cx="317" cy="98" r="13" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="335" y="90" text-anchor="start" class="model-name" fill="#86efac">Qwen3.5 122B MoE</text>
+  <text x="335" y="104" text-anchor="start" class="model-detail">1.00 avg · 43.7 tok/s</text>
+
+  <!-- MiniMax MLX: 45.7, 0.98, 100.1 GB → x=327.6, y=134.4, r=16 -->
+  <circle cx="328" cy="134" r="16" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+
+  <!-- GPT-OSS MLX: 63.6, 0.98, 63.4 GB → x=420.7, y=134.4, r=12.7 -->
+  <circle cx="421" cy="134" r="13" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="438" y="152" text-anchor="start" class="model-name" fill="#86efac">GPT-OSS (MLX)</text>
+  <text x="438" y="166" text-anchor="start" class="model-detail">0.98 · 63.6 tok/s</text>
+
+  <!-- DeepSeek R1 MLX: 12.5, 0.91, 18.4 GB → x=155, y=261, r=6.9 -->
+  <circle cx="155" cy="261" r="7" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="148" y="253" text-anchor="end" class="model-detail" fill="#86efac">DeepSeek R1</text>
+
+  <!-- Qwen2.5 Coder 32B MLX: 19.4, 0.91, 18.3 GB → x=191, y=261, r=6.8 -->
+  <circle cx="191" cy="261" r="7" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="191" y="250" text-anchor="middle" class="model-name" fill="#86efac">Qwen2.5 Coder 32B</text>
+
+  <!-- Qwen2.5 14B 1M MLX: 26.6, 0.91, 15.7 GB → x=228.3, y=261, r=6.3 -->
+  <circle cx="228" cy="261" r="6" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+
+  <!-- Qwen2.5 VL 7B MLX: 38.1, 0.91, 9 GB → x=288, y=261, r=4.8 -->
+  <circle cx="288" cy="261" r="5" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+
+  <!-- Llama 3.3 70B MLX: 9.0, 0.90, 39.7 GB → x=137, y=279, r=10.1 -->
+  <circle cx="137" cy="279" r="10" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+
+  <!-- Llama 4 Scout MLX: 21.6, 0.90, 61.1 GB → x=202, y=279, r=12.5 -->
+  <circle cx="202" cy="279" r="13" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+
+  <!-- Mistral Small MLX: 28.0, 0.88, 14.1 GB → x=235.6, y=315.2, r=6 -->
+  <circle cx="236" cy="315" r="6" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+
+  <!-- Phi-4 MLX: 43.1, 0.87, 8.3 GB → x=314, y=333.3, r=4.6 -->
+  <circle cx="314" cy="333" r="5" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+
+  <!-- DS Coder V2 Lite MLX: 144.0, 0.85, 8.8 GB → x=839, y=369.5, r=4.7 -->
+  <circle cx="839" cy="370" r="5" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="824" y="362" text-anchor="end" class="model-name" fill="#86efac">DeepSeek V2 Lite (MLX)</text>
+  <text x="824" y="376" text-anchor="end" class="model-detail">0.85 · 144.0 tok/s</text>
+
+  <!-- Qwen2.5 Coder 7B MLX: 54.0, 0.83, 8.1 GB → x=370.8, y=405.7, r=4.6 -->
+  <circle cx="371" cy="406" r="5" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="381" y="410" text-anchor="start" class="model-name" fill="#86efac">Qwen2.5 Coder 7B</text>
+  <text x="381" y="424" text-anchor="start" class="model-detail">0.83 · 54.0 tok/s</text>
+
   <!-- GGUF↔MLX connectors for dual-format models -->
-  <line x1="222.1" y1="98.1" x2="332.3" y2="98.1" stroke="#555" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
-  <line x1="432.7" y1="188.6" x2="420.7" y2="134.3" stroke="#555" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
-  <line x1="750.9" y1="423.8" x2="838.8" y2="369.5" stroke="#555" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
-  <rect x="685" y="350" width="185" height="105" rx="8" fill="#1e1e2e" stroke="#333" stroke-width="1"/>
-  <text x="697" y="368" class="legend-text" fill="#a0a0a0">Size = model weight (GB)</text>
-  <rect x="695" y="378" width="10" height="10" rx="2" fill="#4a9eed" opacity="0.7"/>
-  <text x="711" y="388" class="legend-text">GGUF format</text>
-  <circle cx="700" cy="403" r="5" fill="#22c55e" opacity="0.7"/>
-  <text x="711" y="407" class="legend-text">MLX format</text>
-  <line x1="693" y1="420" x2="707" y2="420" stroke="#555" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
-  <text x="711" y="424" class="legend-text">Same model, both formats</text>
-  <text x="697" y="444" class="legend-text" fill="#757575">12 GGUF · 14 MLX · 26 total</text>
+  <line x1="255" y1="98" x2="304" y2="98" stroke="#555" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+  <line x1="438" y1="189" x2="421" y2="147" stroke="#555" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+  <line x1="751" y1="424" x2="839" y2="370" stroke="#555" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+
+  <!-- Legend (top-right, inside plot area) -->
+  <rect x="685" y="85" width="185" height="105" rx="8" fill="#1e1e2e" stroke="#333" stroke-width="1"/>
+  <text x="697" y="103" class="legend-text" fill="#a0a0a0">Size = model weight (GB)</text>
+  <rect x="695" y="113" width="10" height="10" rx="2" fill="#4a9eed" opacity="0.7"/>
+  <text x="711" y="123" class="legend-text">GGUF format</text>
+  <circle cx="700" cy="138" r="5" fill="#22c55e" opacity="0.7"/>
+  <text x="711" y="142" class="legend-text">MLX format</text>
+  <line x1="693" y1="155" x2="707" y2="155" stroke="#555" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  <text x="711" y="159" class="legend-text">Same model, both formats</text>
+  <text x="697" y="179" class="legend-text" fill="#757575">12 GGUF · 13 MLX · 14 unique</text>
 </svg>
