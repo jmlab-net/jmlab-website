@@ -1,123 +1,120 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 520" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 560" fill="none">
   <style>
     text { font-family: 'Segoe UI', system-ui, sans-serif; }
     .title { font-size: 22px; font-weight: 700; fill: #e5e5e5; }
     .subtitle { font-size: 13px; fill: #a0a0a0; }
     .axis-label { font-size: 13px; font-weight: 600; fill: #a0a0a0; }
     .tick { font-size: 11px; fill: #757575; }
-    .model-name { font-size: 12px; font-weight: 600; }
-    .model-detail { font-size: 11px; fill: #a0a0a0; }
+    .model-name { font-size: 11px; font-weight: 600; }
+    .model-detail { font-size: 10px; fill: #a0a0a0; }
     .legend-text { font-size: 11px; fill: #a0a0a0; }
-    .sweet-label { font-size: 11px; font-weight: 500; fill: #22c55e; opacity: 0.8; }
+    .tier-label { font-size: 10px; font-weight: 500; fill: #555; }
   </style>
-
-  <rect width="760" height="520" rx="12" fill="#141419"/>
-
-  <text x="380" y="35" text-anchor="middle" class="title">Model Performance Tradeoffs</text>
-  <text x="380" y="55" text-anchor="middle" class="subtitle">26 Models · Size vs Speed vs Accuracy</text>
-
-  <!-- Y Axis -->
-  <line x1="80" y1="80" x2="80" y2="430" stroke="#333" stroke-width="1.5"/>
-  <text x="35" y="260" text-anchor="middle" class="axis-label" transform="rotate(-90, 35, 260)">Rubric Avg</text>
-
-  <!-- Y ticks: 1.00 at y=90, 0.90 at y=160, 0.80 at y=250, 0.70 at y=350 -->
-  <line x1="75" y1="90" x2="85" y2="90" stroke="#444" stroke-width="1"/>
-  <text x="65" y="94" text-anchor="end" class="tick">1.00</text>
-  <line x1="80" y1="90" x2="690" y2="90" stroke="#333" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
-
-  <line x1="75" y1="160" x2="85" y2="160" stroke="#444" stroke-width="1"/>
-  <text x="65" y="164" text-anchor="end" class="tick">0.90</text>
-  <line x1="80" y1="160" x2="690" y2="160" stroke="#333" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
-
-  <line x1="75" y1="250" x2="85" y2="250" stroke="#444" stroke-width="1"/>
-  <text x="65" y="254" text-anchor="end" class="tick">0.80</text>
-  <line x1="80" y1="250" x2="690" y2="250" stroke="#333" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
-
-  <line x1="75" y1="350" x2="85" y2="350" stroke="#444" stroke-width="1"/>
-  <text x="65" y="354" text-anchor="end" class="tick">0.70</text>
-
-  <!-- X Axis -->
-  <line x1="80" y1="430" x2="700" y2="430" stroke="#333" stroke-width="1.5"/>
-  <text x="390" y="470" text-anchor="middle" class="axis-label">Tokens / sec</text>
-
-  <!-- X ticks: 0 at x=80, ~25 at x=180, ~50 at x=280, ~70 at x=360, ~100 at x=460, ~145 at x=640 -->
-  <line x1="180" y1="425" x2="180" y2="435" stroke="#444" stroke-width="1"/>
-  <text x="180" y="448" text-anchor="middle" class="tick">25</text>
-  <line x1="280" y1="425" x2="280" y2="435" stroke="#444" stroke-width="1"/>
-  <text x="280" y="448" text-anchor="middle" class="tick">50</text>
-  <line x1="400" y1="425" x2="400" y2="435" stroke="#444" stroke-width="1"/>
-  <text x="400" y="448" text-anchor="middle" class="tick">75</text>
-  <line x1="520" y1="425" x2="520" y2="435" stroke="#444" stroke-width="1"/>
-  <text x="520" y="448" text-anchor="middle" class="tick">100</text>
-  <line x1="640" y1="425" x2="640" y2="435" stroke="#444" stroke-width="1"/>
-  <text x="640" y="448" text-anchor="middle" class="tick">125</text>
-
-  <!-- Sweet spot zone -->
-  <rect x="300" y="110" width="200" height="110" rx="10" fill="#22c55e" opacity="0.06" stroke="#22c55e" stroke-opacity="0.15" stroke-dasharray="4,3"/>
-  <text x="400" y="208" text-anchor="middle" class="sweet-label">Sweet spot</text>
-
-  <!-- Background models (gray dots) -->
-  <circle cx="210" cy="172" r="7" fill="#555" opacity="0.4"/>
-  <circle cx="220" cy="180" r="8" fill="#555" opacity="0.4"/>
-  <circle cx="240" cy="192" r="7" fill="#555" opacity="0.4"/>
-  <circle cx="230" cy="185" r="6" fill="#555" opacity="0.4"/>
-  <circle cx="180" cy="188" r="9" fill="#555" opacity="0.4"/>
-  <circle cx="150" cy="193" r="7" fill="#555" opacity="0.4"/>
-  <circle cx="188" cy="210" r="6" fill="#555" opacity="0.4"/>
-  <circle cx="540" cy="240" r="5" fill="#555" opacity="0.4"/>
-  <circle cx="200" cy="255" r="6" fill="#555" opacity="0.4"/>
-  <circle cx="300" cy="242" r="7" fill="#555" opacity="0.4"/>
-  <circle cx="160" cy="310" r="7" fill="#555" opacity="0.4"/>
-
-  <!-- Qwen3.5 122B MoE MLX (top performer) -->
-  <circle cx="266" cy="90" r="14" fill="#22c55e" opacity="0.8" stroke="#22c55e" stroke-width="2" stroke-opacity="0.5"/>
-  <text x="288" y="82" class="model-name" fill="#86efac">Qwen3.5 122B MoE (MLX)</text>
-  <text x="288" y="98" class="model-detail">1.00 avg · 46.6 tok/s</text>
-
-  <!-- Qwen3.5 122B MoE GGUF -->
-  <circle cx="182" cy="90" r="12" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
-  <text x="110" y="80" class="model-name" fill="#86efac">GGUF</text>
-  <text x="110" y="96" class="model-detail">25.4 tok/s</text>
-
-  <!-- Qwen2.5 VL 7B (efficiency winner) -->
-  <circle cx="370" cy="160" r="10" fill="#4a9eed" opacity="0.8" stroke="#4a9eed" stroke-width="2" stroke-opacity="0.5"/>
-  <text x="388" y="148" class="model-name" fill="#93c5fd">Qwen2.5 VL 7B</text>
-  <text x="388" y="164" class="model-detail">0.90 · 69.8 tok/s · 4.8 GB</text>
-
-  <!-- GPT-OSS 120B (fast + accurate) -->
-  <circle cx="360" cy="185" r="11" fill="#f59e0b" opacity="0.5" stroke="#f59e0b" stroke-width="1.5" stroke-opacity="0.5"/>
-  <text x="378" y="195" class="model-name" fill="#fcd34d">GPT-OSS 120B</text>
-  <text x="378" y="210" class="model-detail">0.89 · 68.0 tok/s</text>
-
-  <!-- DeepSeek Coder V2 Lite (speed demon) -->
-  <circle cx="590" cy="243" r="8" fill="#ec4899" opacity="0.8" stroke="#ec4899" stroke-width="1.5" stroke-opacity="0.5"/>
-  <text x="530" y="233" class="model-name" fill="#f9a8d4" text-anchor="end">DeepSeek V2 Lite</text>
-  <text x="530" y="249" class="model-detail" text-anchor="end">0.83 · 127 tok/s</text>
-
-  <!-- Qwen3 4B (fastest, smallest) -->
-  <circle cx="655" cy="362" r="7" fill="#ec4899" opacity="0.8" stroke="#ec4899" stroke-width="2" stroke-opacity="0.5"/>
-  <text x="600" y="352" class="model-name" fill="#f9a8d4" text-anchor="end">Qwen3 4B</text>
-  <text x="600" y="368" class="model-detail" text-anchor="end">0.69 · 145 tok/s · 2.3 GB</text>
-
-  <!-- Llama 3.3 70B (large, slow) -->
-  <circle cx="112" cy="200" r="12" fill="#f59e0b" opacity="0.4" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4"/>
-  <text x="100" y="222" class="model-name" fill="#fcd34d">Llama 3.3 70B</text>
-  <text x="100" y="238" class="model-detail">0.86 · 7.5 tok/s · 39.7 GB</text>
-
-  <!-- MiniMax 229B -->
-  <circle cx="255" cy="260" r="14" fill="#f59e0b" opacity="0.35" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.3"/>
-  <text x="275" y="270" class="model-name" fill="#fcd34d">MiniMax 229B</text>
-  <text x="275" y="286" class="model-detail">0.82 · 38.3 tok/s · 101 GB</text>
-
-  <!-- Legend -->
-  <rect x="560" y="80" width="170" height="120" rx="8" fill="#1e1e2e" stroke="#333" stroke-width="1"/>
-  <text x="575" y="98" class="legend-text" fill="#a0a0a0">Bubble = model size</text>
-  <circle cx="580" cy="114" r="5" fill="#22c55e" opacity="0.8"/>
-  <text x="592" y="118" class="legend-text">Top performer</text>
-  <circle cx="580" cy="136" r="5" fill="#4a9eed" opacity="0.8"/>
-  <text x="592" y="140" class="legend-text">Best efficiency</text>
-  <circle cx="580" cy="158" r="5" fill="#ec4899" opacity="0.8"/>
-  <text x="592" y="162" class="legend-text">Speed leaders</text>
-  <circle cx="580" cy="180" r="5" fill="#555" opacity="0.5"/>
-  <text x="592" y="184" class="legend-text">Other models</text>
+  <rect width="920" height="560" rx="12" fill="#141419"/>
+  <text x="460" y="35" text-anchor="middle" class="title">Model Performance Tradeoffs</text>
+  <text x="460" y="55" text-anchor="middle" class="subtitle">26 Models · GGUF vs MLX · Size vs Speed vs Accuracy</text>
+  <line x1="90" y1="80" x2="90" y2="460" stroke="#333" stroke-width="1.5"/>
+  <text x="35" y="270" text-anchor="middle" class="axis-label" transform="rotate(-90, 35, 270)">Rubric Avg</text>
+  <line x1="85" y1="98" x2="95" y2="98" stroke="#444" stroke-width="1"/>
+  <text x="80" y="102" text-anchor="end" class="tick">1.00</text>
+  <line x1="85" y1="189" x2="95" y2="189" stroke="#444" stroke-width="1"/>
+  <text x="80" y="193" text-anchor="end" class="tick">0.95</text>
+  <line x1="90" y1="189" x2="870" y2="189" stroke="#333" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
+  <line x1="85" y1="279" x2="95" y2="279" stroke="#444" stroke-width="1"/>
+  <text x="80" y="283" text-anchor="end" class="tick">0.90</text>
+  <line x1="90" y1="279" x2="870" y2="279" stroke="#333" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
+  <line x1="85" y1="370" x2="95" y2="370" stroke="#444" stroke-width="1"/>
+  <text x="80" y="374" text-anchor="end" class="tick">0.85</text>
+  <line x1="90" y1="370" x2="870" y2="370" stroke="#333" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
+  <line x1="85" y1="460" x2="95" y2="460" stroke="#444" stroke-width="1"/>
+  <text x="80" y="464" text-anchor="end" class="tick">0.80</text>
+  <line x1="90" y1="460" x2="870" y2="460" stroke="#333" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
+  <line x1="90" y1="460" x2="870" y2="460" stroke="#333" stroke-width="1.5"/>
+  <text x="480" y="505" text-anchor="middle" class="axis-label">Tokens / sec</text>
+  <text x="90" y="480" text-anchor="middle" class="tick">0</text>
+  <line x1="220" y1="455" x2="220" y2="465" stroke="#444" stroke-width="1"/>
+  <text x="220" y="480" text-anchor="middle" class="tick">25</text>
+  <line x1="350" y1="455" x2="350" y2="465" stroke="#444" stroke-width="1"/>
+  <text x="350" y="480" text-anchor="middle" class="tick">50</text>
+  <line x1="480" y1="455" x2="480" y2="465" stroke="#444" stroke-width="1"/>
+  <text x="480" y="480" text-anchor="middle" class="tick">75</text>
+  <line x1="610" y1="455" x2="610" y2="465" stroke="#444" stroke-width="1"/>
+  <text x="610" y="480" text-anchor="middle" class="tick">100</text>
+  <line x1="740" y1="455" x2="740" y2="465" stroke="#444" stroke-width="1"/>
+  <text x="740" y="480" text-anchor="middle" class="tick">125</text>
+  <line x1="870" y1="455" x2="870" y2="465" stroke="#444" stroke-width="1"/>
+  <text x="870" y="480" text-anchor="middle" class="tick">150</text>
+  <rect x="90" y="80" width="780" height="109" fill="#22c55e" opacity="0.03"/>
+  <text x="875" y="138" class="tier-label" fill="#22c55e" opacity="0.6">Elite (≥0.95)</text>
+  <rect x="90" y="189" width="780" height="90" fill="#4a9eed" opacity="0.03"/>
+  <text x="875" y="238" class="tier-label" fill="#4a9eed" opacity="0.6">Strong (0.90–0.94)</text>
+  <rect x="90" y="279" width="780" height="90" fill="#f59e0b" opacity="0.03"/>
+  <text x="875" y="328" class="tier-label" fill="#f59e0b" opacity="0.6">Good (0.85–0.89)</text>
+  <rect x="90" y="370" width="780" height="90" fill="#ef4444" opacity="0.03"/>
+  <text x="875" y="419" class="tier-label" fill="#ef4444" opacity="0.6">Fair (0.80–0.84)</text>
+  <!-- GGUF Models (squares) -->
+  <rect x="212.0" y="88.0" width="20.2" height="20.2" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="207.1" y="86.1" text-anchor="end" class="model-name" fill="#93c5fd">GGUF</text>
+  <text x="207.1" y="100.1" text-anchor="end" class="model-detail">25.4 tok/s</text>
+  <rect x="223.3" y="124.1" width="20.5" height="20.5" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="218.5" y="139.3" text-anchor="end" class="model-name" fill="#93c5fd">Nemotron Super</text>
+  <text x="218.5" y="153.3" text-anchor="end" class="model-detail">0.98 · 27.6 tok/s</text>
+  <rect x="277.3" y="122.4" width="23.8" height="23.8" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="304.2" y="139.3" text-anchor="start" class="model-name" fill="#93c5fd">MiniMax 229B</text>
+  <text x="304.2" y="153.3" text-anchor="start" class="model-detail">0.98 · 38.3 tok/s · 101 GB</text>
+  <rect x="423.0" y="178.9" width="19.4" height="19.4" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="447.7" y="180.6" text-anchor="start" class="model-name" fill="#93c5fd">GPT-OSS 120B</text>
+  <text x="447.7" y="194.6" text-anchor="start" class="model-detail">0.95 · 65.9 tok/s</text>
+  <rect x="206.5" y="214.9" width="19.7" height="19.7" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <rect x="448.4" y="274.4" width="9.2" height="9.2" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="468.0" y="271.0" text-anchor="start" class="model-name" fill="#93c5fd">Qwen2.5 VL 7B</text>
+  <text x="468.0" y="285.0" text-anchor="start" class="model-detail">0.90 · 69.8 tok/s · 4.8 GB</text>
+  <rect x="200.5" y="273.1" width="12.0" height="12.0" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <rect x="165.6" y="308.7" width="13.0" height="13.0" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <rect x="274.6" y="310.0" width="10.5" height="10.5" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <rect x="270.5" y="310.1" width="10.4" height="10.4" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <rect x="120.6" y="343.0" width="16.9" height="16.9" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="129.0" y="371.4" text-anchor="middle" class="model-name" fill="#93c5fd">Llama 3.3 70B</text>
+  <text x="129.0" y="385.4" text-anchor="middle" class="model-detail">0.86 · 7.5 tok/s · 39.7 GB</text>
+  <rect x="745.6" y="418.5" width="10.6" height="10.6" rx="2" fill="#4a9eed" opacity="0.6" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="735.9" y="428.8" text-anchor="end" class="model-name" fill="#93c5fd">DeepSeek V2 Lite</text>
+  <text x="735.9" y="442.8" text-anchor="end" class="model-detail">0.82 · 127.1 tok/s</text>
+  <!-- MLX Models (circles) -->
+  <circle cx="332.3" cy="98.1" r="11.9" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="347.3" y="90.1" text-anchor="start" class="model-name" fill="#86efac">Qwen3.5 122B MoE</text>
+  <text x="347.3" y="104.1" text-anchor="start" class="model-detail">1.00 avg · 46.6 tok/s</text>
+  <circle cx="327.6" cy="134.3" r="14.0" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <circle cx="420.7" cy="134.3" r="11.4" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="435.7" y="152.3" text-anchor="start" class="model-name" fill="#86efac">GPT-OSS (MLX)</text>
+  <text x="435.7" y="166.3" text-anchor="start" class="model-detail">0.98 · 63.6 tok/s</text>
+  <circle cx="155.0" cy="261.0" r="7.7" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <circle cx="190.9" cy="261.0" r="7.7" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <circle cx="228.3" cy="261.0" r="7.4" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <circle cx="288.1" cy="261.0" r="6.3" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <circle cx="136.8" cy="279.0" r="9.9" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <circle cx="202.3" cy="279.0" r="11.6" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <circle cx="235.6" cy="315.2" r="7.1" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <circle cx="314.1" cy="333.3" r="6.1" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <circle cx="838.8" cy="369.5" r="6.3" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="823.8" y="359.5" text-anchor="end" class="model-name" fill="#86efac">DeepSeek V2 Lite (MLX)</text>
+  <text x="823.8" y="373.5" text-anchor="end" class="model-detail">0.85 · 144.0 tok/s</text>
+  <circle cx="832.6" cy="369.5" r="4.7" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="817.6" y="381.5" text-anchor="end" class="model-name" fill="#86efac">Qwen3 4B</text>
+  <text x="817.6" y="395.5" text-anchor="end" class="model-detail">0.85 · 142.8 tok/s · 2.3 GB</text>
+  <circle cx="370.8" cy="405.7" r="6.1" fill="#22c55e" opacity="0.6" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="385.8" y="410.7" text-anchor="start" class="model-name" fill="#86efac">Qwen2.5 Coder 7B</text>
+  <text x="385.8" y="424.7" text-anchor="start" class="model-detail">0.83 · 54.0 tok/s</text>
+  <!-- GGUF↔MLX connectors for dual-format models -->
+  <line x1="222.1" y1="98.1" x2="332.3" y2="98.1" stroke="#555" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+  <line x1="432.7" y1="188.6" x2="420.7" y2="134.3" stroke="#555" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+  <line x1="750.9" y1="423.8" x2="838.8" y2="369.5" stroke="#555" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+  <rect x="685" y="350" width="185" height="105" rx="8" fill="#1e1e2e" stroke="#333" stroke-width="1"/>
+  <text x="697" y="368" class="legend-text" fill="#a0a0a0">Size = model weight (GB)</text>
+  <rect x="695" y="378" width="10" height="10" rx="2" fill="#4a9eed" opacity="0.7"/>
+  <text x="711" y="388" class="legend-text">GGUF format</text>
+  <circle cx="700" cy="403" r="5" fill="#22c55e" opacity="0.7"/>
+  <text x="711" y="407" class="legend-text">MLX format</text>
+  <line x1="693" y1="420" x2="707" y2="420" stroke="#555" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  <text x="711" y="424" class="legend-text">Same model, both formats</text>
+  <text x="697" y="444" class="legend-text" fill="#757575">12 GGUF · 14 MLX · 26 total</text>
 </svg>

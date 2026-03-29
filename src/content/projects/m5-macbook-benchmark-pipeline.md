@@ -8,7 +8,9 @@ sortOrder: 1
 
 ## Abstract
 
-No structured framework exists for evaluating local LLMs running on consumer Apple Silicon hardware. This project presents an automated benchmarking pipeline that evaluated 26 models across four categories (GSM8K, HumanEval, MMLU, IFEval) using two-layer scoring — deterministic automated validation combined with independent five-dimension rubric review. Across 1,440 scored prompt runs at three temperatures on an M5 MacBook Pro with 128 GB unified memory, Qwen3.5 122B MoE achieved a perfect 1.00 rubric average while Qwen2.5 VL 7B delivered 0.90 accuracy at 69.8 tokens/second — 3x faster than comparably accurate models at a fraction of the parameter count.
+No structured framework exists for evaluating local LLMs running on consumer Apple Silicon hardware. This project presents an automated benchmarking pipeline that evaluated 26 models across four categories (GSM8K, HumanEval, MMLU, IFEval) using two-layer scoring — deterministic automated validation combined with independent five-dimension rubric review. Across two evaluation stages totaling over 2,400 scored prompt runs at three temperatures on an M5 MacBook Pro with 128 GB unified memory, the top Stage 2 performers — Nemotron Super ~120B and MiniMax M2.5 229B (MLX) — each achieved a 0.98 rubric average, while Qwen2.5 VL 7B delivered 0.90 accuracy at 69.8 tokens/second — 3x faster than comparably accurate models at a fraction of the parameter count.
+
+<!-- Data note: Stage 1 tested 17 models (1,020 runs), Stage 2 tested 24 models (1,440 runs) with overlap. Qwen3.5 122B MoE achieved 1.00 in Stage 1 but was not retested in Stage 2. Combined unique models: 26. -->
 
 ## Introduction
 
@@ -54,9 +56,53 @@ Each category contributes 5 prompts for a total of 20 prompts per model per temp
 
 ### Prompt Design
 
-GSM8K prompts are multi-step arithmetic word problems appended with "Let's think step by step." to elicit chain-of-thought reasoning. Expected answers are exact integers (e.g., 72, 624). HumanEval prompts present a function signature with docstring and require the model to complete the implementation. MMLU prompts present a question with four lettered options (A–D) and instruct the model to "Answer with only the letter." IFEval prompts impose specific structural constraints: exact bullet count, all-caps response, keyword frequency minimums, valid JSON with required keys, or word count within a specified range.
+The exact prompts used in each category are listed below.
 
-The full prompt templates are maintained in the project repository. The following table documents each prompt file's role in the pipeline:
+**GSM8K — Math Reasoning** (scoring: extract final number via regex, exact match)
+
+| # | Prompt | Answer |
+|---|--------|--------|
+| 0 | Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May.<br>How many clips did Natalia sell altogether in April and May?<br>Let's think step by step. | 72 |
+| 1 | Weng earns $12 an hour for babysitting. Yesterday, she just did 50 minutes of babysitting.<br>How much did she earn? Let's think step by step. | 10 |
+| 2 | Betty is saving money for a new wallet which costs $100. Betty has only half of the money she needs.<br>Her parents decided to give her $15 for that purpose, and her grandparents twice as much as her parents.<br>How much more money does Betty need to buy the wallet? Let's think step by step. | 5 |
+| 3 | Julie is reading a 120-page book. Yesterday, she was able to read 12 pages and today, she read twice as many pages as yesterday.<br>If she wants to read half of the remaining pages tomorrow, how many pages should she read?<br>Let's think step by step. | 42 |
+| 4 | James writes a 3-page letter to 2 different friends twice a week.<br>How many pages does he write a year? Let's think step by step. | 624 |
+
+**HumanEval — Python Code Completion** (scoring: execute against assert tests, or LLM judge fallback)
+
+Each prompt uses the template: "Complete this Python function:" followed by the function signature and docstring.
+
+| # | Function | Task |
+|---|----------|------|
+| 0 | `has_close_elements(`<br>`numbers: List[float],`<br>`threshold: float) -> bool` | Return True if any two numbers<br>are closer than threshold |
+| 1 | `separate_paren_groups(`<br>`paren_string: str) -> List[str]` | Split balanced parenthesis<br>groups into list |
+| 2 | `truncate_number(`<br>`number: float) -> float` | Return decimal part of<br>positive float (3.5 → 0.5) |
+| 3 | `below_zero(`<br>`operations: List[int]) -> bool` | Return True if bank balance<br>ever drops below zero |
+| 4 | `mean_absolute_deviation(`<br>`numbers: List[float]) -> float` | Calculate MAD around<br>mean of input list |
+
+**MMLU — Factual Knowledge** (scoring: extract letter A–D via regex, exact match)
+
+Each prompt ends with "Answer with only the letter."
+
+| # | Question | A | B | C | D | Answer |
+|---|----------|---|---|---|---|--------|
+| 0 | Term for gamete production<br>by meiosis? | Gametogenesis | Oogenesis | Spermatogenesis | Sporogenesis | A |
+| 1 | Best description of<br>mitochondria function? | Protein<br>synthesis | ATP via cellular<br>respiration | DNA<br>replication | Lipid<br>synthesis | B |
+| 2 | Charge of a proton? | -1 | 0 | +1 | +2 | C |
+| 3 | Philosopher of the<br>categorical imperative? | John<br>Locke | David<br>Hume | Immanuel<br>Kant | John Stuart<br>Mill | C |
+| 4 | What does GDP stand for<br>in economics? | Gross Domestic<br>Product | General Debt<br>Payment | Government<br>Defense Policy | Gross Development<br>Percentage | A |
+
+**IFEval — Instruction Following** (scoring: constraint-specific automated check)
+
+| # | Prompt | Constraint |
+|---|--------|-----------|
+| 0 | Write exactly 3 bullet points (each starting with "- ") about the benefits of regular exercise.<br>Use no more than 20 words per bullet. | Exactly 3 lines<br>matching `^- ` |
+| 1 | Respond ONLY in ALL CAPS.<br>Describe what a neural network is in 2-3 sentences. | Entire response<br>uppercase |
+| 2 | Write a response containing "innovation" at least 3 times and "future" at least 2 times.<br>Topic: technology trends. | Keyword frequency<br>thresholds |
+| 3 | Respond with a valid JSON object with exactly these keys: "name", "age", "city".<br>Use any reasonable values. | Valid JSON with<br>required keys |
+| 4 | Write between 50 and 60 words (inclusive) describing the water cycle.<br>Count carefully. | Word count<br>in [50, 60] |
+
+The following table documents each pipeline file's role:
 
 | File | Stage | Purpose |
 |------|-------|---------|
@@ -136,11 +182,11 @@ The `prompt_results` table stores the model's raw response alongside the automat
 
 ![Model Performance Tradeoffs](../../assets/projects/benchmark-model-tradeoffs.svg)
 
-The Stage 1 evaluation covered 17 models across three temperatures, producing 1,020 scored prompt responses with independent rubric review. The full pipeline (Stage 1 + Stage 2) evaluated 26 models with 1,440 total scored executions.
+Evaluation proceeded in two stages. Stage 1 tested 17 models across three temperatures, producing 1,020 scored prompt responses. Stage 2 expanded to 24 models (adding MLX variants and new models), producing 1,440 scored prompt responses. Across both stages, 26 unique models completed evaluation. The tables below use Stage 2 data where available; Qwen3.5 122B MoE results are from Stage 1 (the model was not retested in Stage 2).
 
 ### Overall Performance
 
-The top two performers were both variants of Qwen3.5 122B MoE — a mixture-of-experts reasoning model with only 10B active parameters per forward pass. Both the GGUF (Q4_K_S) and MLX (4-bit) quantizations achieved a perfect 1.00 rubric average, scoring 15.0/15 across all four categories. The MLX variant ran at 46.6 tokens/second while the GGUF variant achieved 25.4 tokens/second.
+In Stage 2, the top performers were Nemotron Super ~120B and MiniMax M2.5 229B (MLX), each achieving a 0.98 rubric average. In the earlier Stage 1 evaluation, both variants of Qwen3.5 122B MoE achieved a perfect 1.00 rubric average — scoring 15.0/15 across all four categories — but these results are not directly comparable as the two stages used separate evaluation runs.
 
 The efficiency standout was Qwen2.5 VL 7B (GGUF Q4_K_M), which achieved 0.90 rubric accuracy at 69.8 tokens/second with a 4.8 GB model file — 3x faster than Mistral Small 24B at the same accuracy level, using one-third the disk space.
 
@@ -148,44 +194,72 @@ The efficiency standout was Qwen2.5 VL 7B (GGUF Q4_K_M), which achieved 0.90 rub
 
 | Model | GB | Quant | tok/s | Avg | Best |
 |-------|----|-------|-------|-----|------|
-| Qwen3.5 122B MoE | — | Q4_K_S | 25.4 | 1.00 | All |
+| Qwen3.5 122B MoE | — | Q4_K_S | 25.4 | 1.00 | All (Stage 1) |
+| Nemotron Super ~120B | ~67.5 | Q4_K_M | 27.6 | 0.98 | GSM8K |
+| MiniMax M2.5 229B | 101.0 | Q3_K_XL | 38.3 | 0.98 | MMLU |
+| GPT-OSS 120B | 58.5 | MXFP4 | 65.9 | 0.95 | IFEval |
+| Llama 4 Scout 109B MoE | 61.3 | Q4_K_M | 24.3 | 0.93 | GSM8K |
+| Qwen2.5 VL 7B | 4.8 | Q4_K_M | 69.8 | 0.90 | HumanEval |
 | Mistral Small 24B | 13.5 | Q4_K_M | 22.4 | 0.90 | GSM8K |
-| Qwen2.5 VL 7B | 4.8 | Q4_K_M | 69.8 | 0.90 | GSM8K |
-| Nemotron Super ~120B | ~67.5 | Q4_K_M | 28.3 | 0.89 | GSM8K |
-| Phi-4 14B | 7.9 | Q4_K_M | 35.7 | 0.88 | GSM8K |
+| DeepSeek R1 32B | 18.0 | Q4_K_M | 15.8 | 0.88 | GSM8K |
 | Qwen2.5 14B 1M | 8.3 | Q4_K_M | 36.5 | 0.88 | GSM8K |
-| Llama 4 Scout 109B MoE | 61.3 | Q4_K_M | 24.9 | 0.86 | GSM8K |
+| Phi-4 14B | 7.9 | Q4_K_M | 35.7 | 0.88 | GSM8K |
 | Llama 3.3 70B | 39.7 | Q4_K_M | 7.5 | 0.86 | GSM8K |
-| DeepSeek Coder V2 Lite | 8.8 | Q4_K_M | 127.1 | 0.83 | GSM8K |
-| MiniMax M2.5 229B | 101.0 | Q3_K_XL | 38.3 | 0.82 | IFEval |
-| DeepSeek R1 32B | 18.0 | Q4_K_M | 16.5 | 0.74 | GSM8K |
+| DeepSeek Coder V2 Lite | 8.8 | Q4_K_M | 127.1 | 0.82 | GSM8K |
 
 **MLX Models** (sorted by rubric average):
 
 | Model | GB | Bits | tok/s | Avg | Best |
 |-------|----|------|-------|-----|------|
-| Qwen3.5 122B MoE | — | 4-bit | 46.6 | 1.00 | All |
+| Qwen3.5 122B MoE | — | 4-bit | 46.6 | 1.00 | All (Stage 1) |
+| MiniMax M2.5 229B | — | 3-bit | 45.7 | 0.98 | GSM8K |
+| GPT-OSS 120B | — | MXFP4 | 63.6 | 0.98 | GSM8K |
+| DeepSeek R1 32B | 18.4 | 4-bit | 12.5 | 0.91 | HumanEval |
 | Qwen2.5 Coder 32B | 18.3 | 4-bit | 19.4 | 0.91 | GSM8K |
-| GPT-OSS 120B | 58.5 | MXFP4 | 68.0 | 0.89 | GSM8K |
+| Qwen2.5 14B 1M | 15.7 | 8-bit | 26.6 | 0.91 | MMLU |
+| Qwen2.5 VL 7B | 9.0 | 8-bit | 38.1 | 0.91 | HumanEval |
+| Llama 3.3 70B | 39.7 | 4-bit | 9.0 | 0.90 | MMLU |
+| Llama 4 Scout 109B MoE | 61.1 | 4-bit | 21.6 | 0.90 | GSM8K |
+| Mistral Small 24B | 14.1 | 4-bit | 28.0 | 0.88 | GSM8K |
+| Phi-4 14B | — | 4-bit | 43.1 | 0.87 | GSM8K |
+| DeepSeek Coder V2 Lite | 8.8 | 4-bit | 144.0 | 0.85 | HumanEval |
+| Qwen3 4B | 2.3 | 4-bit | 142.8 | 0.85 | GSM8K |
 | Qwen2.5 Coder 7B | 8.1 | 8-bit | 54.0 | 0.83 | GSM8K |
-| Qwen3 4B | 2.3 | 4-bit | 145.5 | 0.69 | GSM8K |
 
 ### Per-Category Leaders
 
+<!-- Per-category data uses Stage 2 results. Qwen3.5 122B MoE (Stage 1) scored 1.00 across all categories but is excluded from this table to avoid cross-stage comparison. -->
+
 | Category | Leader | Score | Runner-up | Score |
 |----------|--------|-------|-----------|-------|
-| GSM8K | Phi-4 14B / Qwen3.5 122B | 0.99–1.00 | Nemotron Super | 0.99 |
-| HumanEval | Qwen3.5 122B MoE | 1.00 | Qwen2.5 VL 7B | 0.95 |
-| MMLU | Qwen3.5 122B MoE | 1.00 | Multiple tied | 0.80 |
-| IFEval | Qwen3.5 122B MoE | 1.00 | Qwen2.5 Coder 32B | 0.94 |
+| GSM8K | Llama 4 Scout / Nemotron Super / MiniMax MLX | 1.00 | Qwen2.5 Coder 32B / Phi-4 / DeepSeek R1 | 0.99 |
+| HumanEval | Nemotron Super ~120B | 0.99 | MiniMax M2.5 229B (MLX) | 0.98 |
+| MMLU | Nemotron / MiniMax (both) / GPT-OSS (both) | 1.00 | Qwen2.5 14B 1M (MLX) / Qwen2.5 VL 7B (MLX) | 0.93 |
+| IFEval | GPT-OSS 120B | 0.99 | GPT-OSS 120B (MLX) | 0.99 |
 
 ### Speed-Accuracy Tradeoff
 
-Model performance spans from 2.3 GB / 145.5 tokens/second (Qwen3 4B, 0.69 rubric average) to 101 GB / 46 tokens/second (MiniMax M2.5 229B). The relationship between model size and accuracy is not linear — Qwen2.5 Coder 32B (18.3 GB, 0.91 accuracy) outperformed Llama 3.3 70B (39.7 GB, 0.86 accuracy) while running 2.5x faster.
+Model performance spans from 2.3 GB / 142.8 tokens/second (Qwen3 4B, 0.85 rubric average) to 101 GB / 38.3 tokens/second (MiniMax M2.5 229B). The relationship between model size and accuracy is not linear — Qwen2.5 Coder 32B (18.3 GB, 0.91 accuracy) outperformed Llama 3.3 70B (39.7 GB, 0.86 accuracy) while running 2.6x faster.
 
 ### Format Comparison: GGUF vs MLX
 
-Several models were tested in both GGUF and MLX quantizations. MLX variants consistently achieved higher throughput on Apple Silicon. Mistral Small 24B ran at 22.4 t/s (GGUF Q4_K_M) versus 38.2 t/s (MLX 4-bit) — a 70% speed improvement with equivalent accuracy. DeepSeek Coder V2 Lite showed a similar pattern: 47.2 t/s (GGUF) versus 144.0 t/s (MLX) — a 3x throughput gain.
+Eleven models were tested in both GGUF and MLX quantizations. MLX variants achieved higher throughput in most cases, though the advantage varied by model and was not universal.
+
+| Model | GGUF tok/s | MLX tok/s | Speedup | Accuracy (GGUF → MLX) |
+|-------|------------|-----------|---------|----------------------|
+| Qwen3.5 122B MoE | 25.4 | 46.6 | +83% | 1.00 → 1.00 |
+| MiniMax M2.5 229B | 38.3 | 45.7 | +19% | 0.98 → 0.98 |
+| DeepSeek Coder V2 Lite | 127.1 | 144.0 | +13% | 0.82 → 0.85 |
+| Mistral Small 24B | 22.4 | 28.0 | +25% | 0.90 → 0.88 |
+| Phi-4 14B | 35.7 | 43.1 | +21% | 0.88 → 0.87 |
+| Llama 3.3 70B | 7.5 | 9.0 | +20% | 0.86 → 0.90 |
+| GPT-OSS 120B | 65.9 | 63.6 | -3% | 0.95 → 0.98 |
+| Qwen2.5 VL 7B | 69.8 | 38.1 | -45% | 0.90 → 0.91 |
+| Qwen2.5 14B 1M | 36.5 | 26.6 | -27% | 0.88 → 0.91 |
+| DeepSeek R1 32B | 15.8 | 12.5 | -21% | 0.88 → 0.91 |
+| Llama 4 Scout 109B MoE | 24.3 | 21.6 | -11% | 0.93 → 0.90 |
+
+Notable: MLX was faster for 6 of 11 models (up to +83% for Qwen3.5 122B MoE). However, GGUF Q4_K_M outperformed MLX 4-bit/8-bit for Qwen2.5 VL 7B (-45%), Qwen2.5 14B 1M (-27%), DeepSeek R1 32B (-21%), and Llama 4 Scout (-11%). The throughput advantage appears format- and architecture-dependent rather than universal.
 
 ![GGUF vs MLX throughput comparison — same models, side by side](../../assets/projects/benchmark-gguf-vs-mlx.svg)
 
@@ -205,7 +279,7 @@ Storing results in PostgreSQL rather than flat files transformed the project fro
 
 ### Limitations
 
-This evaluation has several constraints. All inference ran on a single machine (M5 MacBook Pro, 128 GB unified memory), limiting the maximum model size to approximately 108 GB RAM. Quantized models (4-bit, 3-bit) were tested rather than full-precision weights, which may affect accuracy relative to published benchmarks. The prompt set (20 per model) is small compared to full benchmark suites (GSM8K contains 8,792 problems; HumanEval contains 164). Results reflect local inference characteristics and are not directly comparable to cloud-hosted evaluations.
+This evaluation has several constraints. All inference ran on a single machine (M5 MacBook Pro, 128 GB unified memory), limiting the maximum model size to approximately 108 GB RAM. Quantized models (4-bit, 3-bit) were tested rather than full-precision weights, which may affect accuracy relative to published benchmarks. The prompt set (20 per model) is small compared to full benchmark suites (GSM8K contains 8,792 problems; HumanEval contains 164). Results reflect local inference characteristics and are not directly comparable to cloud-hosted evaluations. Stage 1 and Stage 2 results are not directly comparable as they represent separate evaluation runs; cross-stage comparisons should be interpreted with caution.
 
 ### Future Work
 
