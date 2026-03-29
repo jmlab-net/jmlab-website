@@ -3,7 +3,7 @@ title: "Homelab Infrastructure"
 description: "Privacy-focused home server running containerized services for automation, AI, file storage, and development"
 technologies: ["docker", "linux"]
 featured: true
-sortOrder: 2
+sortOrder: 3
 ---
 
 My homelab started as a simple media server and has grown into a full self-hosted infrastructure stack. It now runs containerized services handling everything from centralized file storage and local AI workloads to development tooling and workflow automation — and it's the backbone that powers this website's content pipeline.

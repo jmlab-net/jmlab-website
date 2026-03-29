@@ -3,7 +3,7 @@ title: "Personal Website"
 description: "AI-automated personal website built with Astro, with an automated content pipeline powered by local AI and workflow automation"
 technologies: ["astro", "tailwind", "typescript", "docker"]
 featured: true
-sortOrder: 1
+sortOrder: 2
 ---
 
 This website is the project I'm most excited about right now — not because the output is revolutionary, but because of how it's built. The goal was to create a personal site that largely maintains itself through an AI-powered content pipeline, with minimal manual intervention between having an idea and seeing it published.
