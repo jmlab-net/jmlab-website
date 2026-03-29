@@ -13,14 +13,21 @@ This is a personal website built with Astro, deployed to GitHub Pages via GitHub
 - **Public site**: Astro static output → GitHub Pages (free CDN, SSL, zero-maintenance)
 - **Automation layer**: n8n + Ollama + Stable Diffusion on Unraid (content pipeline, image generation, monitoring)
 - **Dev mirror**: Gitea on Unraid mirrors the GitHub repo for local development
+- **Local dev preview**: Nginx on Unraid serves the built site at `REDACTED_HOSTNAME` via Traefik
 - **Reverse proxy**: Traefik + Cloudflare Tunnel for any API endpoints exposed from Unraid
 
-### Deployment flow
+### Production deployment flow
 1. Content lands in `src/content/` (via Cowork, n8n, or manual edit)
 2. Commit pushed to GitHub (via Claude Code, n8n GitHub node, or manual push)
 3. GitHub Actions builds Astro (`astro build`)
 4. Output deployed to GitHub Pages automatically
 5. n8n monitors uptime and alerts via Mattermost
+
+### Local dev deployment flow
+1. Commit pushed to Gitea on Unraid
+2. Gitea Actions runner builds Astro with `SITE_URL=http://REDACTED_HOSTNAME`
+3. Built `dist/` copied to shared volume served by Nginx
+4. Site available at `http://REDACTED_HOSTNAME` on LAN via Traefik
 
 ## Tech stack
 

@@ -3,7 +3,7 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: 'https://jmlab.github.io',
+  site: process.env.SITE_URL || 'https://jmlab.github.io',
   output: 'static',
   integrations: [sitemap()],
   vite: {
