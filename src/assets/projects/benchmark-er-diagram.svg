@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 380" fill="none">
+  <style>
+    text { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .tbl-name { font-size: 15px; font-weight: 700; }
+    .pk { font-size: 12px; font-weight: 500; fill: #e5e5e5; }
+    .col { font-size: 11px; fill: #a0a0a0; }
+    .count { font-size: 10px; fill: #757575; font-style: italic; }
+    .fk-label { font-size: 10px; fill: #a0a0a0; }
+  </style>
+  <rect width="780" height="380" rx="10" fill="#141419"/>
+
+  <!-- models -->
+  <rect x="20" y="30" width="170" height="125" rx="8" fill="#22c55e" opacity="0.12" stroke="#22c55e" stroke-opacity="0.4"/>
+  <text x="38" y="52" class="tbl-name" fill="#86efac">models</text>
+  <line x1="30" y1="60" x2="180" y2="60" stroke="#22c55e" stroke-opacity="0.3"/>
+  <text x="38" y="78" class="pk">model_id  PK</text>
+  <text x="38" y="95" class="col">label, tier, format</text>
+  <text x="38" y="110" class="col">quantization, weight_gb</text>
+  <text x="38" y="125" class="col">ram_gb, is_reasoning</text>
+  <text x="38" y="145" class="count">26 rows</text>
+
+  <!-- benchmark_runs -->
+  <rect x="300" y="30" width="170" height="105" rx="8" fill="#4a9eed" opacity="0.12" stroke="#4a9eed" stroke-opacity="0.4"/>
+  <text x="318" y="52" class="tbl-name" fill="#93c5fd">benchmark_runs</text>
+  <line x1="310" y1="60" x2="460" y2="60" stroke="#4a9eed" stroke-opacity="0.3"/>
+  <text x="318" y="78" class="pk">run_id  PK</text>
+  <text x="318" y="95" class="col">started_at, model_count</text>
+  <text x="318" y="110" class="col">notes, triggered_by</text>
+  <text x="318" y="127" class="count">1 per execution</text>
+
+  <!-- model_benchmark_results -->
+  <rect x="560" y="30" width="200" height="125" rx="8" fill="#f59e0b" opacity="0.12" stroke="#f59e0b" stroke-opacity="0.4"/>
+  <text x="575" y="49" class="tbl-name" fill="#fcd34d" font-size="13">model_benchmark_results</text>
+  <line x1="570" y1="57" x2="750" y2="57" stroke="#f59e0b" stroke-opacity="0.3"/>
+  <text x="578" y="75" class="pk">run_id FK | model_id FK</text>
+  <text x="578" y="92" class="col">per-category scores (0-1)</text>
+  <text x="578" y="107" class="col">overall_score, tokens_per_sec</text>
+  <text x="578" y="122" class="col">tier</text>
+  <text x="578" y="145" class="count">N models per run</text>
+
+  <!-- FK: runs → model_benchmark_results -->
+  <line x1="470" y1="75" x2="560" y2="75" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.5" marker-end="url(#fk-blue)"/>
+  <text x="505" y="68" class="fk-label" fill="#93c5fd">run_id</text>
+
+  <!-- FK: models → model_benchmark_results -->
+  <line x1="190" y1="85" x2="560" y2="85" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4" marker-end="url(#fk-green)"/>
+  <text x="370" y="80" class="fk-label" fill="#86efac">model_id</text>
+
+  <!-- prompt_results -->
+  <rect x="160" y="220" width="210" height="140" rx="8" fill="#8b5cf6" opacity="0.12" stroke="#8b5cf6" stroke-opacity="0.4"/>
+  <text x="178" y="242" class="tbl-name" fill="#c4b5fd">prompt_results</text>
+  <line x1="170" y1="250" x2="360" y2="250" stroke="#8b5cf6" stroke-opacity="0.3"/>
+  <text x="178" y="268" class="pk">run_id FK | model_id FK</text>
+  <text x="178" y="285" class="col">category, prompt_index</text>
+  <text x="178" y="300" class="col">response_text, thinking_text</text>
+  <text x="178" y="315" class="col">score, score_detail (JSONB)</text>
+  <text x="178" y="340" class="count">N x 20 per run</text>
+
+  <!-- response_scores -->
+  <rect x="450" y="220" width="210" height="140" rx="8" fill="#f59e0b" opacity="0.12" stroke="#f59e0b" stroke-opacity="0.4"/>
+  <text x="468" y="242" class="tbl-name" fill="#fcd34d">response_scores</text>
+  <line x1="460" y1="250" x2="650" y2="250" stroke="#f59e0b" stroke-opacity="0.3"/>
+  <text x="468" y="268" class="pk">run_id FK | model_id FK</text>
+  <text x="468" y="285" class="col">category, prompt_index, temp</text>
+  <text x="468" y="300" class="col">accuracy, reasoning</text>
+  <text x="468" y="315" class="col">adherence, conciseness, conf</text>
+  <text x="468" y="340" class="count">N x 20 per run</text>
+
+  <!-- FK: runs → prompt_results -->
+  <line x1="385" y1="135" x2="280" y2="220" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.35" stroke-dasharray="4,3" marker-end="url(#fk-blue)"/>
+
+  <!-- FK: runs → response_scores -->
+  <line x1="385" y1="135" x2="540" y2="220" stroke="#4a9eed" stroke-width="1.5" stroke-opacity="0.35" stroke-dasharray="4,3" marker-end="url(#fk-blue)"/>
+
+  <!-- FK: models → prompt_results -->
+  <line x1="105" y1="155" x2="200" y2="220" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.3" stroke-dasharray="4,3" marker-end="url(#fk-green)"/>
+
+  <!-- FK: models → response_scores -->
+  <line x1="105" y1="155" x2="500" y2="220" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.3" stroke-dasharray="4,3" marker-end="url(#fk-green)"/>
+
+  <!-- 1:1 between prompt_results and response_scores -->
+  <line x1="370" y1="290" x2="450" y2="290" stroke="#8b5cf6" stroke-width="1.5" stroke-opacity="0.5" marker-end="url(#fk-purple)"/>
+  <text x="400" y="283" class="fk-label" fill="#c4b5fd">1:1</text>
+
+  <defs>
+    <marker id="fk-blue" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+      <path d="M0,0 L6,2 L0,4" fill="#4a9eed" opacity="0.5"/>
+    </marker>
+    <marker id="fk-green" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+      <path d="M0,0 L6,2 L0,4" fill="#22c55e" opacity="0.5"/>
+    </marker>
+    <marker id="fk-purple" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+      <path d="M0,0 L6,2 L0,4" fill="#8b5cf6" opacity="0.5"/>
+    </marker>
+  </defs>
+</svg>

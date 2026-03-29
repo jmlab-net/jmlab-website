@@ -136,6 +136,55 @@ const { title, description, technologies, liveUrl, repoUrl } = Astro.props;
     margin-bottom: 0.15rem;
   }
 
+  /* Tables */
+  .project-prose :global(table) {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.82rem;
+    margin-top: 1rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .project-prose :global(thead) {
+    background: var(--surface-raised);
+  }
+
+  .project-prose :global(th) {
+    padding: 0.6rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .project-prose :global(td) {
+    padding: 0.5rem 1rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .project-prose :global(tr:last-child td) {
+    border-bottom: none;
+  }
+
+  .project-prose :global(tbody tr:hover) {
+    background: var(--surface-raised);
+  }
+
+  .project-prose :global(td code) {
+    font-size: 0.75rem;
+    padding: 0.1rem 0.25rem;
+  }
+
   .project-prose :global(code) {
     font-size: 0.8rem;
     background: var(--surface-raised);

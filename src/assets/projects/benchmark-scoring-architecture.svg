@@ -31,7 +31,7 @@
   <!-- Layer 1 Zone -->
   <rect x="25" y="160" width="330" height="260" rx="10" fill="#f59e0b" opacity="0.08" stroke="#f59e0b" stroke-opacity="0.25"/>
   <text x="40" y="180" class="zone-label" fill="#f59e0b">Layer 1: Automated Pass/Fail</text>
-  <text x="40" y="196" class="zone-sub">Self-assessment by model under test</text>
+  <text x="40" y="196" class="zone-sub">Deterministic validation by n8n (during run)</text>
 
   <rect x="45" y="212" width="140" height="42" rx="6" fill="#f59e0b" opacity="0.6"/>
   <text x="115" y="230" text-anchor="middle" class="box-label-sm">GSM8K</text>
@@ -59,7 +59,7 @@
   <!-- Layer 2 Zone -->
   <rect x="405" y="160" width="330" height="260" rx="10" fill="#8b5cf6" opacity="0.08" stroke="#8b5cf6" stroke-opacity="0.25"/>
   <text x="420" y="180" class="zone-label" fill="#8b5cf6">Layer 2: Independent Rubric Review</text>
-  <text x="420" y="196" class="zone-sub">Reviewed by Claude Code (API)</text>
+  <text x="420" y="196" class="zone-sub">Reviewed by Claude (API) — after model unload</text>
 
   <rect x="425" y="215" width="130" height="34" rx="6" fill="#8b5cf6" opacity="0.5"/>
   <text x="490" y="237" text-anchor="middle" class="dim-label">Accuracy</text>

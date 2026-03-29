@@ -1,6 +1,6 @@
 ---
-title: "M5 MacBook Pro Benchmark Pipeline"
-description: "Automated pipeline for benchmarking 24+ local LLMs on Apple Silicon, orchestrated by n8n with structured scoring and live reporting"
+title: "Benchmarking Local LLMs on Apple Silicon"
+description: "A structured evaluation of 26 local LLMs across four benchmark categories on an M5 MacBook Pro, with two-layer scoring and persistent results"
 technologies: ["n8n", "javascript", "python", "postgresql", "docker", "bash"]
 featured: true
 sortOrder: 1
@@ -8,7 +8,7 @@ sortOrder: 1
 
 ## Abstract
 
-Local large language model inference on Apple Silicon lacks a structured evaluation framework comparable to cloud-hosted benchmarks such as LMSYS Chatbot Arena or the Open LLM Leaderboard. This project presents an automated benchmarking pipeline that evaluated 26 local LLMs across four established benchmark categories — GSM8K, HumanEval, MMLU, and IFEval — using a two-layer scoring methodology combining deterministic automated validation with independent five-dimension rubric review. The pipeline executed 1,440 scored prompt runs across three temperature settings (T=0.0, T=0.3, T=0.7) on an M5 MacBook Pro with 128 GB unified memory, with all results persisted in a normalized PostgreSQL schema. The top-performing model, Qwen3.5 122B MoE, achieved a perfect 1.00 rubric average across all categories, while Qwen2.5 VL 7B emerged as the efficiency standout at 0.90 accuracy and 69.8 tokens/second — 3x faster than comparably accurate models at a fraction of the parameter count.
+No structured framework exists for evaluating local LLMs running on consumer Apple Silicon hardware. This project presents an automated benchmarking pipeline that evaluated 26 models across four categories (GSM8K, HumanEval, MMLU, IFEval) using two-layer scoring — deterministic automated validation combined with independent five-dimension rubric review. Across 1,440 scored prompt runs at three temperatures on an M5 MacBook Pro with 128 GB unified memory, Qwen3.5 122B MoE achieved a perfect 1.00 rubric average while Qwen2.5 VL 7B delivered 0.90 accuracy at 69.8 tokens/second — 3x faster than comparably accurate models at a fraction of the parameter count.
 
 ## Introduction
 
@@ -31,9 +31,13 @@ The pipeline consists of two n8n workflows running in Docker on an Unraid server
 
 ![Benchmark Pipeline Flow](../../assets/projects/benchmark-pipeline-flow.svg)
 
-**Workflow 1 — Benchmark Runner** (n8n ID: `zIioQ1lVRioqvFTA`, 14 nodes): Iterates through each model sequentially. For each model, the workflow SSH-es into the MacBook Pro to load the model via `lms load <model_id> --context-length N`, executes 20 prompts against LM Studio's OpenAI-compatible API (`/v1/chat/completions`), scores each response, persists results to PostgreSQL, posts progress to Mattermost, and unloads the model via `lms unload --all` before proceeding to the next.
+**Workflow 1 — Benchmark Runner** (14 nodes): Iterates through each model sequentially. For each model, the workflow SSH-es into the MacBook Pro to load the model via `lms load <model_id> --context-length N`, executes 20 prompts against LM Studio's OpenAI-compatible API (`/v1/chat/completions`), applies Layer 1 automated scoring (deterministic pass/fail), persists results to PostgreSQL, posts progress to Mattermost, and unloads the model via `lms unload --all` before proceeding to the next. After all models complete, a separate Layer 2 rubric review is performed by Claude (via API), scoring each stored response across five qualitative dimensions.
 
-**Workflow 2 — Documentation Generator** (n8n ID: `XctfvBlnc2BYlViz`): Clones a Gitea repository, runs five sequential LLM sessions per model (file tree analysis, core architecture, component interfaces, README generation, LLM context file), and auto-commits output to per-model branches (`docs/benchmark-{model-slug}-{YYYY-MM-DD}`). This serves as both a documentation tool and a real-world benchmark of structured code reasoning.
+![Benchmark runner sequence — one model pass through the pipeline](../../assets/projects/benchmark-runner-sequence.svg)
+
+**Workflow 2 — Documentation Generator**: Clones a Gitea repository, runs five sequential LLM sessions per model (file tree analysis, core architecture, component interfaces, README generation, LLM context file), and auto-commits output to per-model branches. This serves as both a documentation tool and a real-world benchmark of structured code reasoning.
+
+![Documentation generator — 5 sequential LLM sessions per model](../../assets/projects/benchmark-docgen-flow.svg)
 
 ### Benchmark Selection
 
@@ -54,16 +58,16 @@ GSM8K prompts are multi-step arithmetic word problems appended with "Let's think
 
 The full prompt templates are maintained in the project repository. The following table documents each prompt file's role in the pipeline:
 
-| File | Pipeline Stage | Purpose |
-|------|---------------|---------|
-| `benchmark/prompts.md` | Benchmark Runner | Contains all 20 prompt texts with expected answers and scoring method per category |
-| `benchmark/scoring-rubric.md` | Independent Review | Defines the five-dimension rubric (1–3 scale) with per-category scoring guidance |
-| `benchmark/scoring-playbook.md` | Independent Review | Step-by-step procedure for conducting rubric reviews, including SQL queries and validation |
-| `benchmark/run-playbook.md` | Benchmark Runner | Pre-flight checklist, configuration parameters, post-run validation steps |
-| `benchmark/models.md` | Benchmark Runner | Complete model registry with tier, format, quantization, context length, and RAM requirements |
-| `benchmark/troubleshooting.md` | Operations | Known failure modes, root causes, and fixes (SSH, scoring edge cases, credential rotation) |
+| File | Stage | Purpose |
+|------|-------|---------|
+| `prompts.md` | Runner | 20 prompts, expected answers, scoring method |
+| `scoring-rubric.md` | Review | 5-dimension rubric definitions (1–3 scale) |
+| `scoring-playbook.md` | Review | Review procedure, SQL queries, validation |
+| `run-playbook.md` | Runner | Pre-flight checklist, config, post-run checks |
+| `models.md` | Runner | Model registry (tier, format, quant, RAM) |
+| `troubleshooting.md` | Ops | Failure modes, root causes, fixes |
 
-Full prompt templates are available in the [repository link].
+Full prompt templates are available in the [project repository (TBD)].
 
 ### Scoring Framework
 
@@ -71,32 +75,28 @@ Each model response is scored twice through independent mechanisms.
 
 ![Two-Layer Scoring Architecture](../../assets/projects/benchmark-scoring-architecture.svg)
 
-**Layer 1 — Automated Validation.** The benchmark runner workflow scores each response immediately using deterministic, category-specific methods:
+**Layer 1 — Automated Validation.** The benchmark runner scores each response immediately using deterministic, category-specific methods:
 
-| Category | Method | Pass Criteria |
-|----------|--------|---------------|
-| GSM8K | Regex extraction: `ANSWER:\s*([\d.]+)`, `####\s*([\d.]+)`, or last numeric token | Extracted number matches expected answer exactly |
-| HumanEval | Code execution via `python3` against assert tests; fallback to LLM judge with full token budget (16,384) if python3 unavailable | All assertions pass, or judge verdict contains "PASS" |
-| MMLU | Letter extraction: primary `^([ABCD])`, intermediate `ANSWER:\s*([ABCD])`, fallback `\b([ABCD])\b` | Extracted letter matches expected answer |
-| IFEval P0 | Count lines matching `^- ` regex | Exactly 3 |
-| IFEval P1 | `response === response.toUpperCase()` | True (no lowercase characters) |
-| IFEval P2 | Count occurrences of "innovation" and "future" | "innovation" >= 3, "future" >= 2 |
-| IFEval P3 | `JSON.parse()` + key validation | Valid JSON containing keys "name", "age", "city" |
-| IFEval P4 | `response.split(/\s+/).length` | Word count in range [50, 60] |
+| Category | Validation Method | Pass Criteria |
+|----------|------------------|---------------|
+| GSM8K | Numeric extraction (regex cascade) | Exact match to expected answer |
+| HumanEval | Code execution + assert tests | All tests pass (fallback: LLM judge) |
+| MMLU | Letter extraction (regex cascade) | Exact match to expected letter |
+| IFEval | Constraint-specific checks (5 types) | All structural constraints satisfied |
 
-All automated scores are binary: 1.00 (pass) or 0.00 (fail). Results are stored with category-specific `score_detail` JSON containing the extraction evidence (expected value, extracted value, truncation flag, character count).
+All automated scores are binary: 1.00 (pass) or 0.00 (fail). Results are stored with category-specific `score_detail` JSON containing the extraction evidence.
 
-**Layer 2 — Independent Rubric Review.** After each benchmark run completes, a separate review process scores every response across five qualitative dimensions on a 1–3 scale:
+**Layer 2 — Independent Rubric Review.** After all models have been evaluated and unloaded, a separate review process uses the Claude API to score every stored response across five qualitative dimensions on a 1–3 scale:
 
-| Dimension | Score 1 (Poor) | Score 2 (Adequate) | Score 3 (Excellent) |
-|-----------|----------------|--------------------|--------------------|
-| **Accuracy** | Wrong answer or no answer | Partially correct; right approach, wrong result | Fully correct |
-| **Reasoning** | No reasoning, or reasoning contradicts answer | Reasoning present but has gaps or errors | Clear, correct, logically complete |
-| **Instruction Adherence** | Ignored key instructions (wrong format, different question) | Followed partially with minor deviations | Fully adhered to all instructions |
-| **Conciseness** | Excessively verbose (padding, repetition, restates question) | Somewhat verbose but core answer present | Appropriately concise |
-| **Confidence** | Refuses to answer or hedges so heavily answer is unclear | Answer present but buried in caveats | Answer stated clearly and directly |
+| Dimension | What It Measures | 3 = Excellent |
+|-----------|-----------------|---------------|
+| Accuracy | Correctness of final answer | Fully correct |
+| Reasoning | Quality of intermediate steps | Complete, logical, correct |
+| Adherence | Following prompt instructions | All instructions satisfied |
+| Conciseness | Economy of response | No padding or repetition |
+| Confidence | Clarity of answer delivery | Direct, no hedging |
 
-Maximum score per prompt: 15 (5 dimensions x 3 points). Scores are aggregated per model as a normalized average (0.00–1.00) for cross-model comparison. The rubric includes per-category guidance — for example, IFEval weights instruction adherence as the primary dimension, while HumanEval evaluates accuracy based on whether code passes documented test cases.
+Scores of 1 (poor) and 2 (adequate) are defined in the scoring rubric. Maximum: 15 points per prompt (5 dimensions x 3 points). Scores are aggregated per model as a normalized average (0.00–1.00) for cross-model comparison.
 
 ### Temperature Control
 
@@ -106,33 +106,31 @@ Three temperature settings were tested across separate workflow executions:
 - **T=0.3** — Low variance for practical use-case simulation
 - **T=0.7** — Higher variance to assess robustness and creativity
 
-Temperature is configured as a single parameter in the workflow's `[CONFIG]` node and applied uniformly to all 20 prompts within a run. Each temperature setting produces an independent set of `prompt_results` and `response_scores` rows, enabling per-temperature analysis.
+Temperature is configured as a single parameter in the workflow's config node and applied uniformly to all 20 prompts within a run. Each temperature setting produces an independent set of results, enabling per-temperature analysis.
 
 ### Data Architecture
 
-All results are persisted in a PostgreSQL instance (`general_llm_benchmarks` database) across five normalized tables:
+All results are persisted in PostgreSQL across five normalized tables:
 
-| Table | Granularity | Key Columns | Row Count (per run) |
-|-------|-------------|-------------|-------------------|
-| `benchmark_runs` | Per workflow execution | `run_id`, `started_at`, `model_count`, `notes`, `triggered_by` | 1 |
-| `model_benchmark_results` | Per model per run | `run_id`, `model_id`, `tier`, per-category scores (0.0–1.0), `overall_score`, `tokens_per_sec` | N models |
-| `prompt_results` | Per model x prompt per run | `run_id`, `model_id`, `category`, `prompt_index`, `response_text`, `thinking_text`, `score`, `score_detail` (JSONB) | N x 20 |
-| `response_scores` | Per model x prompt x temperature | `run_id`, `model_id`, `category`, `prompt_index`, `temperature`, 5 rubric dimensions, `total`, `notes` | N x 20 |
-| `models` | Catalog | `model_id`, `label`, `tier`, `format`, `quantization`, `context_length`, `is_reasoning`, `weight_gb`, `ram_gb`, `active` | 26 |
+| Table | One Row = | Purpose |
+|-------|-----------|---------|
+| `benchmark_runs` | One workflow execution | Run metadata, timestamps, model count |
+| `model_benchmark_results` | One model in one run | Per-category scores, overall score, throughput |
+| `prompt_results` | One prompt response | Raw response, automated score, score detail (JSONB) |
+| `response_scores` | One rubric evaluation | Five dimension scores, total, reviewer notes |
+| `models` | One model in catalog | Size, format, quantization, tier, RAM requirement |
+
+![Database ER diagram — 5 normalized tables with foreign key relationships](../../assets/projects/benchmark-er-diagram.svg)
 
 The `prompt_results` table stores the model's raw response alongside the automated score and category-specific `score_detail` JSON. The `response_scores` table stores the independent rubric review. The `thinking_text` column in `prompt_results` captures extracted `<think>...</think>` blocks from reasoning models (11 of 26 models emit chain-of-thought), stored separately from the response text.
 
 ### Hardware Configuration
 
-**Inference host:** M5 MacBook Pro, Apple M5 chip, 128 GB unified memory. Models served via LM Studio's OpenAI-compatible API at `192.168.0.187:1234`.
+**Inference host:** M5 MacBook Pro, Apple M5 chip, 128 GB unified memory. Models served via LM Studio's OpenAI-compatible API on the local network.
 
-**Orchestration host:** Unraid server at `REDACTED_IP` running:
-- n8n v2.37.4 (Docker container, `NODE_FUNCTION_ALLOW_BUILTIN=fs,child_process,http,https`)
-- PostgreSQL 16 (port 5432)
-- Mattermost (notifications at `mattermost.local.jmlab.net`)
-- Gitea (repository hosting for documentation generator workflow)
+**Orchestration host:** Unraid server running n8n v2.37.4 (Docker), PostgreSQL 16, Mattermost (notifications), and Gitea (repository hosting for the documentation generator workflow).
 
-**Network:** SSH over local network (port 22) for model load/unload commands. HTTP for inference API calls. SSH key authentication with key mounted at `/ssh-keys/n8n_lmstudio` in the n8n container.
+**Network:** SSH over the local network for model load/unload commands. HTTP for inference API calls. SSH key authentication with the key mounted in the n8n container.
 
 ## Results
 
@@ -146,14 +144,40 @@ The top two performers were both variants of Qwen3.5 122B MoE — a mixture-of-e
 
 The efficiency standout was Qwen2.5 VL 7B (GGUF Q4_K_M), which achieved 0.90 rubric accuracy at 69.8 tokens/second with a 4.8 GB model file — 3x faster than Mistral Small 24B at the same accuracy level, using one-third the disk space.
 
+**GGUF Models** (sorted by rubric average):
+
+| Model | GB | Quant | tok/s | Avg | Best |
+|-------|----|-------|-------|-----|------|
+| Qwen3.5 122B MoE | — | Q4_K_S | 25.4 | 1.00 | All |
+| Mistral Small 24B | 13.5 | Q4_K_M | 22.4 | 0.90 | GSM8K |
+| Qwen2.5 VL 7B | 4.8 | Q4_K_M | 69.8 | 0.90 | GSM8K |
+| Nemotron Super ~120B | ~67.5 | Q4_K_M | 28.3 | 0.89 | GSM8K |
+| Phi-4 14B | 7.9 | Q4_K_M | 35.7 | 0.88 | GSM8K |
+| Qwen2.5 14B 1M | 8.3 | Q4_K_M | 36.5 | 0.88 | GSM8K |
+| Llama 4 Scout 109B MoE | 61.3 | Q4_K_M | 24.9 | 0.86 | GSM8K |
+| Llama 3.3 70B | 39.7 | Q4_K_M | 7.5 | 0.86 | GSM8K |
+| DeepSeek Coder V2 Lite | 8.8 | Q4_K_M | 127.1 | 0.83 | GSM8K |
+| MiniMax M2.5 229B | 101.0 | Q3_K_XL | 38.3 | 0.82 | IFEval |
+| DeepSeek R1 32B | 18.0 | Q4_K_M | 16.5 | 0.74 | GSM8K |
+
+**MLX Models** (sorted by rubric average):
+
+| Model | GB | Bits | tok/s | Avg | Best |
+|-------|----|------|-------|-----|------|
+| Qwen3.5 122B MoE | — | 4-bit | 46.6 | 1.00 | All |
+| Qwen2.5 Coder 32B | 18.3 | 4-bit | 19.4 | 0.91 | GSM8K |
+| GPT-OSS 120B | 58.5 | MXFP4 | 68.0 | 0.89 | GSM8K |
+| Qwen2.5 Coder 7B | 8.1 | 8-bit | 54.0 | 0.83 | GSM8K |
+| Qwen3 4B | 2.3 | 4-bit | 145.5 | 0.69 | GSM8K |
+
 ### Per-Category Leaders
 
-| Category | Top Model(s) | Score | Notable |
-|----------|-------------|-------|---------|
-| GSM8K (math) | Phi-4 14B, Qwen3.5 122B (both), Llama 3.3 70B | 0.99–1.00 | Four-way tie; math reasoning broadly strong across sizes |
-| HumanEval (coding) | Qwen3.5 122B MoE (both variants) | 1.00 | Only models to achieve perfect coding scores |
-| MMLU (factual) | Qwen3.5 122B MoE (both variants) | 1.00 | Perfect factual knowledge across all temperatures |
-| IFEval (instruction) | Qwen3.5 122B MoE (both variants) | 1.00 | Constraint satisfaction was the hardest category overall |
+| Category | Leader | Score | Runner-up | Score |
+|----------|--------|-------|-----------|-------|
+| GSM8K | Phi-4 14B / Qwen3.5 122B | 0.99–1.00 | Nemotron Super | 0.99 |
+| HumanEval | Qwen3.5 122B MoE | 1.00 | Qwen2.5 VL 7B | 0.95 |
+| MMLU | Qwen3.5 122B MoE | 1.00 | Multiple tied | 0.80 |
+| IFEval | Qwen3.5 122B MoE | 1.00 | Qwen2.5 Coder 32B | 0.94 |
 
 ### Speed-Accuracy Tradeoff
 
@@ -163,9 +187,7 @@ Model performance spans from 2.3 GB / 145.5 tokens/second (Qwen3 4B, 0.69 rubric
 
 Several models were tested in both GGUF and MLX quantizations. MLX variants consistently achieved higher throughput on Apple Silicon. Mistral Small 24B ran at 22.4 t/s (GGUF Q4_K_M) versus 38.2 t/s (MLX 4-bit) — a 70% speed improvement with equivalent accuracy. DeepSeek Coder V2 Lite showed a similar pattern: 47.2 t/s (GGUF) versus 144.0 t/s (MLX) — a 3x throughput gain.
 
-### Archived Models
-
-Four models were removed during evaluation: Mistral 7B Instruct v0.3 and StarCoder2 15B (empty responses on all prompts), Codestral 22B (LM Studio connection timeout on all prompts in both GGUF and MLX variants).
+![GGUF vs MLX throughput comparison — same models, side by side](../../assets/projects/benchmark-gguf-vs-mlx.svg)
 
 ## Discussion
 
@@ -175,7 +197,7 @@ The two-layer scoring methodology proved essential. Automated validation alone w
 
 ### Orchestration
 
-n8n proved surprisingly capable as an ML evaluation orchestration engine. JavaScript Code nodes handled HTTP calls, SSH commands, regex scoring, and SQL construction within a single workflow. The primary limitation was debugging complexity — a 14-node workflow with SSH connections, HTTP calls to LM Studio, and PostgreSQL writes produces failure modes that are difficult to trace through n8n's visual interface. The most fragile component was SSH-based model loading. Timing issues, stale connections, and LM Studio CLI hangs required defensive error handling (connectivity probes via `nc -z -w 3`, explicit unload-before-load sequences) that accounted for more development time than any other pipeline component.
+n8n proved surprisingly capable as an ML evaluation orchestration engine. JavaScript Code nodes handled HTTP calls, SSH commands, regex scoring, and SQL construction within a single workflow. The primary limitation was debugging complexity — a 14-node workflow with SSH connections, HTTP calls, and PostgreSQL writes produces failure modes that are difficult to trace through n8n's visual interface. The most fragile component was SSH-based model loading. Timing issues, stale connections, and LM Studio CLI hangs required defensive error handling (connectivity probes via `nc -z -w 3`, explicit unload-before-load sequences) that accounted for more development time than any other pipeline component.
 
 ### Data Persistence
 
@@ -188,3 +210,21 @@ This evaluation has several constraints. All inference ran on a single machine (
 ### Future Work
 
 Planned extensions include automated re-runs triggered by new model releases (via n8n webhook + LM Studio model registry polling), expansion of the prompt set to 50+ per category, addition of multi-turn conversation benchmarks, and a web dashboard for interactive result exploration built on the existing PostgreSQL schema.
+
+## References
+
+1. Cobbe, K., Kosaraju, V., Bavarian, M., Chen, M., Jun, H., Kaiser, L., Plappert, M., Tworek, J., Hilton, J., Nakano, R., Hesse, C., & Schulman, J. (2021). Training Verifiers to Solve Math Word Problems. *arXiv preprint arXiv:2110.14168*. [https://arxiv.org/abs/2110.14168](https://arxiv.org/abs/2110.14168)
+
+2. Chen, M., Tworek, J., Jun, H., Yuan, Q., Pinto, H. P. de O., Kaplan, J., Edwards, H., Burda, Y., Joseph, N., Brockman, G., Ray, A., Puri, R., Krueger, G., Petrov, M., Khlaaf, H., Sastry, G., Mishkin, P., Chan, B., Gray, S., … Zaremba, W. (2021). Evaluating Large Language Models Trained on Code. *arXiv preprint arXiv:2107.03374*. [https://arxiv.org/abs/2107.03374](https://arxiv.org/abs/2107.03374)
+
+3. Hendrycks, D., Burns, C., Basart, S., Zou, A., Mazeika, M., Song, D., & Steinhardt, J. (2021). Measuring Massive Multitask Language Understanding. *Proceedings of the International Conference on Learning Representations (ICLR)*. [https://arxiv.org/abs/2009.03300](https://arxiv.org/abs/2009.03300)
+
+4. Zhou, J., Lu, T., Mishra, S., Brahma, S., Basu, S., Liang, Y., Zhong, Q., Blume, C., Li, X., Li, T., Rawat, A. S., Vashishth, S., Dey, K., He, H., Cho, K., & Sil, A. (2023). Instruction-Following Evaluation for Large Language Models. *arXiv preprint arXiv:2311.07911*. [https://arxiv.org/abs/2311.07911](https://arxiv.org/abs/2311.07911)
+
+5. LM Studio. Local LLM inference engine with OpenAI-compatible API. [https://lmstudio.ai](https://lmstudio.ai)
+
+6. n8n. Workflow automation platform. [https://n8n.io](https://n8n.io)
+
+7. LMSYS Chatbot Arena. Crowdsourced LLM evaluation platform. [https://chat.lmsys.org](https://chat.lmsys.org)
+
+8. Open LLM Leaderboard. Hugging Face model evaluation leaderboard. [https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard)
