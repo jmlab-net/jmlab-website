@@ -1,121 +1,144 @@
 ---
-title: "The Best Local LLMs for Your M5 MacBook Pro"
-description: "Practical model recommendations for Apple Silicon based on real benchmarks — organized by how much memory you can spare, with context window and temperature guidance."
+title: "Which LLMs Can Your M5 MacBook Actually Run?"
+description: "Model recommendations for every M5 MacBook memory tier — 16 GB through 128 GB — based on real benchmarks, with context window and temperature guidance."
 pubDate: 2026-03-29
 tags: ["llm", "apple-silicon", "benchmarks", "lm-studio", "local-ai"]
 draft: false
 ---
 
-I spent the last few weeks running 14 open-weight LLMs through a structured benchmark pipeline on my M5 MacBook Pro with 128 GB of unified memory. The [full project writeup](/projects/m5-macbook-benchmark-pipeline) has the methodology, scoring rubrics, and raw data tables. This post is the practical version: which model should you actually run based on your hardware constraints?
+I ran 14 open-weight LLMs through a structured benchmark pipeline on an M5 MacBook Pro with 128 GB of unified memory — four benchmark categories, three temperature settings, over 2,400 scored prompt runs. The [full project writeup](/projects/m5-macbook-benchmark-pipeline) has the methodology and raw data. This post is the practical version: which models should you run on your specific machine?
 
-The short answer depends on one thing — how much memory you can dedicate to a model.
+The 2026 M5 MacBook lineup spans four memory tiers that matter for local LLMs: 16 GB, 32 GB, 64 GB, and 128 GB. Each tier opens up a different class of model.
 
-## How local LLM memory works on Apple Silicon
+## How local LLMs use your MacBook's memory
 
-On a MacBook, the GPU and CPU share the same unified memory pool. When you load a model in LM Studio, the entire quantized model file gets loaded into this shared memory. A 70 GB model file uses 70 GB of your RAM. That's memory your OS, browser, IDE, and everything else can't use.
+On Apple Silicon, the GPU and CPU share a single unified memory pool. When you load a model in LM Studio, the quantized model file loads entirely into this shared memory — a 70 GB model uses 70 GB of your RAM. That's memory your OS, browser, IDE, and everything else can't use.
 
-A practical rule: **leave at least 16–24 GB free** for the rest of your system. On a 128 GB machine, that means models up to ~104 GB. On a 64 GB machine, you're looking at ~44 GB max. On 32 GB, you have roughly 12–16 GB to work with.
+**Reserve at least 8 GB for macOS and light apps.** If you're running an IDE, a browser with a dozen tabs, and Slack, budget closer to 16 GB. Context windows add overhead too — roughly 1–2 GB extra per 8K tokens of context on larger models.
 
-Context window size matters here too. A larger context window requires additional memory beyond the model file itself — roughly 1–2 GB extra per 8K tokens of context for larger models. If you're running a 70 GB model and set a 32K context window, budget 74–78 GB total.
+Memory bandwidth also matters. The M5 Max delivers 614 GB/s — 4x the MacBook Air's 153 GB/s. Higher bandwidth means faster token generation, especially with MLX models. The same model will run noticeably faster on a Max than on an Air.
 
-## The recommendations
+## 16 GB — MacBook Air or MacBook Pro M5
 
-I tested each model across four benchmark categories — math reasoning, code completion, factual knowledge, and instruction following — at three temperature settings, scoring over 2,400 total prompt runs. Here's what to run at each memory tier.
+**Available on:** MacBook Air M5, MacBook Pro 14" M5 (base)
 
-### If you have 100+ GB to spare
+With ~6–8 GB available for a model, you're limited to 7B-class models — but the best ones in this range are surprisingly capable.
 
-**Best overall: Qwen3.5 122B MoE** — 69.6 GB (MLX 4-bit) or 73.5 GB (GGUF Q4_K_S)
+**Top pick: Qwen2.5 VL 7B** (GGUF Q4_K_M, 4.8 GB) — 69.8 tok/s, 0.90 accuracy
 
-This was the only model to score a perfect 1.00 rubric average across every category. It nailed math, code, factual knowledge, and instruction following without a single weakness. As a mixture-of-experts model, it's also faster than you'd expect for its parameter count — 43.7 tok/s in MLX, 31.7 tok/s in GGUF.
+This was the efficiency champion of the entire benchmark. At 4.8 GB it fits comfortably in 16 GB with room to spare, runs at nearly 70 tokens per second, and matched the accuracy of models 3–8x its size. It scored 0.90 on the rubric — the same as Mistral Small 24B, which needs 13.5 GB.
 
-If you want to push the boundary: **MiniMax M2.5 229B** (100.1 GB MLX, 101 GB GGUF) scored 0.98 and runs at 45.7 tok/s in MLX. It's the largest model I tested and the fact that it runs at all — let alone faster than many smaller models — is a testament to what 128 GB of unified memory enables.
+**For code:** Qwen2.5 Coder 7B (MLX 8-bit, 8.1 GB) — 54 tok/s, 0.83 accuracy. Tight fit on 16 GB but doable if you close other apps. DeepSeek Coder V2 Lite (8.8 GB) is even faster at 127–144 tok/s but scored lower at 0.82–0.85.
 
-**Runner-up: Nemotron Super ~120B** — 85 GB (GGUF Q4_K_M only, no MLX available). Scored 0.98, strong across all categories but especially math. At 27.6 tok/s it's slower than Qwen3.5, so unless you specifically need what Nemotron offers, Qwen3.5 is the better default.
+**Also fits:** Phi-4 14B (GGUF Q4_K_M, 7.9 GB) — 35.7 tok/s, 0.88 accuracy. A strong all-rounder if you can spare the extra 3 GB over Qwen2.5 VL 7B, though it's half the speed.
 
-### If you have 55–80 GB to spare
+## 32 GB — MacBook Air M5, MacBook Pro M5 or M5 Pro
 
-**Best pick: GPT-OSS 120B** — 58.5 GB (GGUF MXFP4) or 63.4 GB (MLX MXFP4)
+**Available on:** MacBook Air M5 (maxed), MacBook Pro 14" M5 (maxed), MacBook Pro M5 Pro (base)
 
-At 0.95–0.98 accuracy with 63–66 tok/s throughput, GPT-OSS offers an unusual combination: near-top accuracy at the highest speed of any large model. It was the IFEval leader (0.99) and ran 2x faster than Qwen3.5.
+With ~18–24 GB available, the 24B and 32B models open up. This is a sweet spot — several models in this range punch well above their weight.
 
-**Alternative: Llama 4 Scout 109B MoE** — 61.3 GB (GGUF) or 61.1 GB (MLX). Scored 0.90–0.93 accuracy. Strong at math (1.00 GSM8K in GGUF) but weaker on instruction following. Choose this if your workload is reasoning-heavy.
+**Top pick: Qwen2.5 Coder 32B** (MLX 4-bit, 18.3 GB) — 19.4 tok/s, 0.91 accuracy
 
-### If you have 35–55 GB to spare
+The highest accuracy in this tier at 0.91 despite the "Coder" name, it performed well across all categories including math and factual knowledge. MLX-only — no GGUF variant was tested.
 
-**Best pick: Llama 3.3 70B** — 39.7 GB (both GGUF and MLX)
+**Best reasoning: DeepSeek R1 32B** (GGUF Q4_K_M, 18.0 GB) — 15.8 tok/s, 0.88 accuracy (GGUF) / 0.91 (MLX)
 
-Scored 0.86–0.90 accuracy. Solid all-rounder but notably slow — 7.5 tok/s in GGUF, 9.0 tok/s in MLX. This is the largest dense (non-MoE) model I tested, and the throughput reflects it. If you can tolerate the speed, the accuracy is worth it. If not, drop down a tier.
+A reasoning model that thinks through problems in `<think>` blocks before answering. Slower but more careful. The MLX variant (18.4 GB) scored higher at 0.91 but ran slightly slower at 12.5 tok/s.
 
-### If you have 15–35 GB to spare
+**Fastest at this tier: Mistral Small 24B** (GGUF Q4_K_M, 13.5 GB) — 22.4 tok/s, 0.90 accuracy
 
-This is the sweet spot for most people. Several models in this range punch well above their weight.
+Leaves 10+ GB free for other apps, runs faster than both 32B models, and matches them on accuracy. The practical choice if you multitask heavily. MLX variant (14.1 GB) bumps throughput to 28 tok/s.
 
-**Best accuracy: DeepSeek R1 32B** — 18.0 GB (GGUF) or 18.4 GB (MLX). Scored 0.88–0.91, the highest in this size tier. It's a reasoning model that emits chain-of-thought in `<think>` blocks before answering, which means responses take longer but are more carefully considered. Throughput is modest: 15.8 tok/s (GGUF), 12.5 tok/s (MLX).
+**Budget option: Qwen2.5 14B 1M** (GGUF Q4_K_M, 8.3 GB) — 36.5 tok/s, 0.88 accuracy
 
-**Best speed at this accuracy: Qwen2.5 Coder 32B** — 18.3 GB (MLX 4-bit only). Scored 0.91 at 19.4 tok/s. If you're doing code-heavy work and don't need GGUF, this is the pick.
+Half the size of the 32B models at nearly the same accuracy, and supports up to 1M token context (though speed degrades well before that limit). Great if you want to keep 20+ GB free.
 
-**Balanced option: Mistral Small 24B** — 13.5 GB (GGUF) or 14.1 GB (MLX). Scored 0.88–0.90 at 22–28 tok/s. Faster than DeepSeek R1 with nearly the same accuracy, and small enough to leave plenty of room for other applications.
+## 64 GB — MacBook Pro M5 Pro or M5 Max
 
-### If you have under 15 GB to spare
+**Available on:** MacBook Pro M5 Pro (upgraded), MacBook Pro M5 Max (base/mid)
 
-**Best pick: Qwen2.5 VL 7B** — 4.8 GB (GGUF Q4_K_M)
+With ~48–56 GB available, you can run 70B dense models and some of the faster 100B+ mixture-of-experts models. This is where the M5 Pro's 307 GB/s and M5 Max's 614 GB/s bandwidth start to matter — MLX models will run significantly faster on Max silicon.
 
-This is the efficiency champion of the entire benchmark. At 0.90 accuracy and 69.8 tok/s, it outperformed models 3–8x its size. The GGUF version is the one to use — the MLX 8-bit variant (9.0 GB) is nearly twice the size and almost half the speed (38.1 tok/s), though accuracy ticks up slightly to 0.91.
+**Top pick: GPT-OSS 120B** (GGUF MXFP4, 58.5 GB) — 65.9 tok/s, 0.95 accuracy
 
-For context: Qwen2.5 VL 7B at 4.8 GB matched Mistral Small 24B (13.5 GB) in accuracy while running 3x faster. If you're on a 32 GB MacBook or just want a lightweight model that stays out of the way, this is the one.
+An unusual combination of near-top accuracy and the highest throughput of any large model tested. At 65.9 tok/s it's faster than most 7B models, despite being a 120B-parameter model. The MLX variant (63.4 GB) scored even higher at 0.98 but is a tight fit — budget 64 GB of unified memory total with context window overhead.
 
-**For code specifically: Qwen2.5 Coder 7B** — 8.1 GB (MLX 8-bit). Scored 0.83 at 54 tok/s. Lower accuracy but very fast for code completion tasks. **DeepSeek Coder V2 Lite** at 8.8 GB is even faster (127–144 tok/s) but scored 0.82–0.85.
+**Alternative: Llama 4 Scout 109B MoE** (GGUF Q4_K_M, 61.3 GB) — 24.3 tok/s, 0.93 accuracy
 
-## Quick reference table
+A mixture-of-experts model strong at math reasoning (1.00 on GSM8K). Slower than GPT-OSS but higher accuracy than Llama 3.3 70B at a similar memory footprint. MLX variant (61.1 GB) scored 0.90 — the GGUF version is better here.
 
-| Memory Budget | Model | Format | GB | tok/s | Accuracy |
-|--------------|-------|--------|-----|-------|----------|
-| 100+ GB | Qwen3.5 122B MoE | MLX 4-bit | 69.6 | 43.7 | 1.00 |
-| 55–80 GB | GPT-OSS 120B | GGUF MXFP4 | 58.5 | 65.9 | 0.95 |
-| 35–55 GB | Llama 3.3 70B | MLX 4-bit | 39.7 | 9.0 | 0.90 |
-| 15–35 GB | DeepSeek R1 32B | MLX 4-bit | 18.4 | 12.5 | 0.91 |
-| 15–35 GB | Mistral Small 24B | MLX 4-bit | 14.1 | 28.0 | 0.88 |
-| Under 15 GB | Qwen2.5 VL 7B | GGUF Q4_K_M | 4.8 | 69.8 | 0.90 |
+**Dense model option: Llama 3.3 70B** (MLX 4-bit, 39.7 GB) — 9.0 tok/s, 0.90 accuracy
+
+The largest dense (non-MoE) model tested. Solid accuracy but notably slow — 9 tok/s means you'll be waiting. The GGUF variant is even slower at 7.5 tok/s. Worth it if you need a well-rounded general model and can tolerate the speed. Leaves ~20 GB free for other apps.
+
+## 128 GB — MacBook Pro M5 Max
+
+**Available on:** MacBook Pro 14"/16" M5 Max (top config)
+
+With ~104–112 GB available, you can run the largest open-weight models available today — up to 229 billion parameters. Combined with the M5 Max's 614 GB/s memory bandwidth, this is the best local LLM experience you can get on a laptop.
+
+**Top pick: Qwen3.5 122B MoE** (MLX 4-bit, 69.6 GB) — 43.7 tok/s, 1.00 accuracy
+
+The only model to score a perfect 1.00 rubric average — flawless across math, code, factual knowledge, and instruction following. As a mixture-of-experts model it's faster than its parameter count suggests. The GGUF variant (73.5 GB, 31.7 tok/s) also scored 1.00 but MLX is 38% faster. Leaves ~40 GB free — enough to run an IDE and browser alongside it.
+
+**Runner-up: Nemotron Super ~120B** (GGUF Q4_K_M, 85.0 GB) — 27.6 tok/s, 0.98 accuracy
+
+GGUF-only (no MLX variant available). Strong across all categories, especially math. Uses more memory than Qwen3.5 for slightly lower accuracy, so it's the second choice unless you have a specific preference.
+
+**Maximum capability: MiniMax M2.5 229B** (MLX 3-bit, 100.1 GB) — 45.7 tok/s, 0.98 accuracy
+
+The largest model tested — 229 billion parameters running locally on a laptop. At 100 GB it leaves only ~12 GB for the OS, so close everything else. Despite its size, it runs at 45.7 tok/s in MLX — faster than many 32B models. The GGUF variant (101 GB, 38.3 tok/s) also scored 0.98.
+
+## Quick reference
+
+| Your MacBook | Model to Run | Format | GB | tok/s | Accuracy |
+|-------------|-------------|--------|-----|-------|----------|
+| 16 GB (Air/Pro M5) | Qwen2.5 VL 7B | GGUF Q4_K_M | 4.8 | 69.8 | 0.90 |
+| 32 GB (Air/Pro M5/Pro) | Qwen2.5 Coder 32B | MLX 4-bit | 18.3 | 19.4 | 0.91 |
+| 32 GB (want speed) | Mistral Small 24B | MLX 4-bit | 14.1 | 28.0 | 0.88 |
+| 64 GB (Pro M5 Pro/Max) | GPT-OSS 120B | GGUF MXFP4 | 58.5 | 65.9 | 0.95 |
+| 128 GB (Pro M5 Max) | Qwen3.5 122B MoE | MLX 4-bit | 69.6 | 43.7 | 1.00 |
 
 ## Context window: what you need to know
 
-Every model I tested was loaded with a specific context length via `lms load --context-length N`. Larger context windows let the model "see" more of your conversation or document, but they cost memory and can reduce throughput.
+Every model was loaded with a specific context length via `lms load --context-length N`. Larger context windows let the model "see" more of your conversation or document, but they cost memory and can reduce throughput.
 
-**For most local tasks — chat, code completion, quick questions — 4K to 8K context is plenty.** You'll get the best speed at these sizes.
+**For most tasks — chat, code completion, quick questions — 4K to 8K context is plenty.** You'll get the best speed at these sizes.
 
-**For long documents, multi-file code analysis, or extended conversations**, you'll want 16K–32K. Most models in this benchmark support at least 32K. Qwen2.5 14B 1M theoretically supports up to 1 million tokens, though at that length the memory and speed tradeoffs are severe.
+**For long documents, multi-file code analysis, or extended conversations**, you'll want 16K–32K. Most models support at least 32K. Qwen2.5 14B 1M theoretically supports up to 1 million tokens, though the memory and speed tradeoffs are severe at that length.
 
 **Practical guidance:**
 - Start with 8K context. It covers 90% of use cases.
-- If you're hitting the limit (the model starts "forgetting" earlier parts of the conversation), bump to 16K or 32K.
-- Every doubling of context length adds memory overhead. On large models (70B+), going from 8K to 32K can add 4–8 GB of memory usage.
-- If you're choosing between a bigger model at 8K context or a smaller model at 32K context, the bigger model at 8K will usually give you better answers. Model quality matters more than context length for most tasks.
+- If the model starts "forgetting" earlier parts of the conversation, bump to 16K or 32K.
+- Every doubling of context adds memory overhead. On 70B+ models, going from 8K to 32K can add 4–8 GB.
+- If you're choosing between a bigger model at 8K context or a smaller model at 32K, the bigger model at 8K usually gives better answers.
 
 ## Temperature: when to change it
 
-Temperature controls how "creative" or "random" the model's outputs are. I tested every model at three settings: 0.0, 0.3, and 0.7.
+Temperature controls randomness in the model's output. I tested every model at 0.0, 0.3, and 0.7.
 
-**T=0.0 (deterministic):** The model always picks the most likely next token. Use this for factual questions, math, code, and anything where you want the same answer every time. Most models scored their best accuracy here.
+**T=0.0** — Deterministic. Same input, same output. Use for math, code, factual lookups.
 
-**T=0.3 (low variance):** Slightly more variation in phrasing but still reliable. This is my default for general use — the responses feel more natural without sacrificing accuracy.
+**T=0.3** — Slight variation in phrasing, still reliable. My default for general use.
 
-**T=0.7 (creative):** Noticeably more diverse outputs. Some models handled this well (Qwen3.5, Nemotron), while others started making errors they wouldn't make at lower temperatures. Use this for brainstorming, creative writing, or when you want to see different perspectives on a problem.
+**T=0.7** — Noticeably more creative. Good for brainstorming and writing. Some models start making errors here that they wouldn't at lower temperatures — the top-performing models (Qwen3.5, Nemotron) stayed accurate even at 0.7.
 
-**The rule of thumb:** Use 0.0–0.3 for tasks with correct answers (math, code, factual lookups). Use 0.5–0.7 for tasks where variety is valuable (writing, ideation, exploration). The top-performing models in my benchmark maintained high accuracy even at T=0.7, which is one reason they ranked highest — they're robust across the full temperature range.
+**Rule of thumb:** 0.0–0.3 for tasks with correct answers. 0.5–0.7 for tasks where variety is valuable.
 
 ## GGUF vs MLX: which format to use
 
 Both formats are quantized model files that run on Apple Silicon. The practical differences:
 
-- **MLX was faster for 6 of 11 models** I tested, with speedups up to 38%. If your model is available in MLX, try it first.
-- **GGUF was faster for 5 of 11 models**, sometimes dramatically — Qwen2.5 VL 7B ran 45% faster in GGUF than MLX.
-- **Accuracy differences were minimal** — within 1–3% between formats for the same model.
-- **GGUF has wider model availability.** Not every model has an MLX version.
+- **MLX was faster for 6 of 11 models** tested, with speedups up to 38%. The advantage is larger on higher-bandwidth chips (M5 Pro and Max).
+- **GGUF was faster for 5 of 11 models**, sometimes dramatically — Qwen2.5 VL 7B ran 45% faster in GGUF.
+- **Accuracy differences were minimal** — within 1–3% for the same model.
+- **GGUF has wider availability.** Not every model has an MLX version.
 
-My recommendation: check if your model has both formats available in LM Studio. Try MLX first. If it feels slow, switch to GGUF. The accuracy difference is negligible either way.
+Try MLX first if your model has both formats. Switch to GGUF if it feels slow. On a MacBook Air (lower bandwidth), GGUF may outperform MLX more often.
 
 ## Bottom line
 
-You don't need a cloud API to get strong LLM performance. A MacBook with 128 GB of unified memory can run 229-billion-parameter models locally. But the sweet spot isn't always the biggest model — Qwen2.5 VL 7B at 4.8 GB delivered 90% of the accuracy of models 20x its size, at 70 tokens per second.
+Every M5 MacBook can run local LLMs — the question is which ones. A 16 GB Air with Qwen2.5 VL 7B gets you 90% accuracy at 70 tokens per second from a 4.8 GB model. A 128 GB Max with Qwen3.5 122B MoE gets you a perfect score. Pick your tier, start with 8K context and T=0.3, and adjust from there.
 
-Pick your model based on your memory budget, start with 8K context and T=0.3, and adjust from there. The [full benchmark data](/projects/m5-macbook-benchmark-pipeline) is available if you want to dig into per-category scores or format comparisons.
+The [full benchmark data](/projects/m5-macbook-benchmark-pipeline) is available if you want per-category scores, format comparisons, or the exact prompts used.
