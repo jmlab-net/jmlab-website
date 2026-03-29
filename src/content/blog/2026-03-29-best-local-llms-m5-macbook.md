@@ -8,7 +8,7 @@ draft: false
 
 I ran 14 open-weight LLMs through a structured benchmark pipeline on an M5 MacBook Pro with 128 GB of unified memory — four benchmark categories, three temperature settings, over 2,400 scored prompt runs. The [full project writeup](/projects/m5-macbook-benchmark-pipeline) has the methodology and raw data. This post is the practical version: which models should you run on your specific machine?
 
-The 2026 M5 MacBook lineup spans four memory tiers that matter for local LLMs: 16 GB, 32 GB, 64 GB, and 128 GB. Each tier opens up a different class of model.
+The 2026 M5 MacBook lineup spans three practical memory tiers for local LLMs: 16 GB, 32–64 GB, and 128 GB. Each tier opens up a different class of model.
 
 ## How local LLMs use your MacBook's memory
 
@@ -32,15 +32,15 @@ This was the efficiency champion of the entire benchmark. At 4.8 GB it fits comf
 
 **Also fits:** Phi-4 14B (GGUF Q4_K_M, 7.9 GB) — 35.7 tok/s, 0.88 accuracy. A strong all-rounder if you can spare the extra 3 GB over Qwen2.5 VL 7B, though it's half the speed.
 
-## 32 GB — MacBook Air M5, MacBook Pro M5 or M5 Pro
+## 32–64 GB — MacBook Air M5 to MacBook Pro M5 Max
 
-**Available on:** MacBook Air M5 (maxed), MacBook Pro 14" M5 (maxed), MacBook Pro M5 Pro (base)
+**Available on:** MacBook Air M5 (32 GB), MacBook Pro M5 (32 GB), MacBook Pro M5 Pro (36–64 GB), MacBook Pro M5 Max (36–64 GB)
 
-With ~18–24 GB available, the 24B and 32B models open up. This is a sweet spot — several models in this range punch well above their weight.
+This range covers the widest variety of MacBook configurations. With ~18–48 GB available for a model depending on your spec, the 24B and 32B models are the workhorses — and on the higher end, Llama 3.3 70B becomes an option.
 
 **Top pick: Qwen2.5 Coder 32B** (MLX 4-bit, 18.3 GB) — 19.4 tok/s, 0.91 accuracy
 
-The highest accuracy in this tier at 0.91 despite the "Coder" name, it performed well across all categories including math and factual knowledge. MLX-only — no GGUF variant was tested.
+The highest accuracy in this tier at 0.91. Despite the "Coder" name, it performed well across all categories including math and factual knowledge. Fits comfortably on any machine in this range. MLX-only — no GGUF variant was tested.
 
 **Best reasoning: DeepSeek R1 32B** (GGUF Q4_K_M, 18.0 GB) — 15.8 tok/s, 0.88 accuracy (GGUF) / 0.91 (MLX)
 
@@ -48,29 +48,17 @@ A reasoning model that thinks through problems in `<think>` blocks before answer
 
 **Fastest at this tier: Mistral Small 24B** (GGUF Q4_K_M, 13.5 GB) — 22.4 tok/s, 0.90 accuracy
 
-Leaves 10+ GB free for other apps, runs faster than both 32B models, and matches them on accuracy. The practical choice if you multitask heavily. MLX variant (14.1 GB) bumps throughput to 28 tok/s.
+Leaves plenty of headroom for other apps, runs faster than both 32B models, and matches them on accuracy. The practical choice if you multitask heavily. MLX variant (14.1 GB) bumps throughput to 28 tok/s.
 
 **Budget option: Qwen2.5 14B 1M** (GGUF Q4_K_M, 8.3 GB) — 36.5 tok/s, 0.88 accuracy
 
-Half the size of the 32B models at nearly the same accuracy, and supports up to 1M token context (though speed degrades well before that limit). Great if you want to keep 20+ GB free.
+Half the size of the 32B models at nearly the same accuracy, and supports up to 1M token context (though speed degrades well before that limit). Great if you want to keep most of your memory free.
 
-## 64 GB — MacBook Pro M5 Pro or M5 Max
+**If you have 48–64 GB: Llama 3.3 70B** (MLX 4-bit, 39.7 GB) — 9.0 tok/s, 0.90 accuracy
 
-**Available on:** MacBook Pro M5 Pro (upgraded), MacBook Pro M5 Max (base/mid)
+The largest dense (non-MoE) model tested. Solid accuracy but notably slow — 9 tok/s means you'll be waiting. The GGUF variant is even slower at 7.5 tok/s. Only practical on 48 GB or higher configs where you can spare 40 GB and still have room for your OS and apps. On M5 Max silicon, the 614 GB/s bandwidth helps — expect slightly better throughput than what I measured on my M5.
 
-With ~48–56 GB available, you can run 70B dense models and some of the faster 100B+ mixture-of-experts models. This is where the M5 Pro's 307 GB/s and M5 Max's 614 GB/s bandwidth start to matter — MLX models will run significantly faster on Max silicon.
-
-**Top pick: GPT-OSS 120B** (GGUF MXFP4, 58.5 GB) — 65.9 tok/s, 0.95 accuracy
-
-An unusual combination of near-top accuracy and the highest throughput of any large model tested. At 65.9 tok/s it's faster than most 7B models, despite being a 120B-parameter model. The MLX variant (63.4 GB) scored even higher at 0.98 but is a tight fit — budget 64 GB of unified memory total with context window overhead.
-
-**Alternative: Llama 4 Scout 109B MoE** (GGUF Q4_K_M, 61.3 GB) — 24.3 tok/s, 0.93 accuracy
-
-A mixture-of-experts model strong at math reasoning (1.00 on GSM8K). Slower than GPT-OSS but higher accuracy than Llama 3.3 70B at a similar memory footprint. MLX variant (61.1 GB) scored 0.90 — the GGUF version is better here.
-
-**Dense model option: Llama 3.3 70B** (MLX 4-bit, 39.7 GB) — 9.0 tok/s, 0.90 accuracy
-
-The largest dense (non-MoE) model tested. Solid accuracy but notably slow — 9 tok/s means you'll be waiting. The GGUF variant is even slower at 7.5 tok/s. Worth it if you need a well-rounded general model and can tolerate the speed. Leaves ~20 GB free for other apps.
+**A note on the gap:** There's a real gap in available models between ~20 GB and ~40 GB. The 32B-class models top out around 18 GB, and the next meaningful step up is Llama 3.3 70B at 40 GB. Models like Qwen3 30B-A3B MoE (~17 GB) and Qwen3 32B (~19 GB) are promising newer releases in this space but weren't part of this benchmark — they're worth testing if you want to make the most of a 48 or 64 GB machine. This is an area I plan to expand in a future round of benchmarks.
 
 ## 128 GB — MacBook Pro M5 Max
 
@@ -95,9 +83,9 @@ The largest model tested — 229 billion parameters running locally on a laptop.
 | Your MacBook | Model to Run | Format | GB | tok/s | Accuracy |
 |-------------|-------------|--------|-----|-------|----------|
 | 16 GB (Air/Pro M5) | Qwen2.5 VL 7B | GGUF Q4_K_M | 4.8 | 69.8 | 0.90 |
-| 32 GB (Air/Pro M5/Pro) | Qwen2.5 Coder 32B | MLX 4-bit | 18.3 | 19.4 | 0.91 |
-| 32 GB (want speed) | Mistral Small 24B | MLX 4-bit | 14.1 | 28.0 | 0.88 |
-| 64 GB (Pro M5 Pro/Max) | GPT-OSS 120B | GGUF MXFP4 | 58.5 | 65.9 | 0.95 |
+| 32–64 GB (best accuracy) | Qwen2.5 Coder 32B | MLX 4-bit | 18.3 | 19.4 | 0.91 |
+| 32–64 GB (best speed) | Mistral Small 24B | MLX 4-bit | 14.1 | 28.0 | 0.88 |
+| 48–64 GB (step up) | Llama 3.3 70B | MLX 4-bit | 39.7 | 9.0 | 0.90 |
 | 128 GB (Pro M5 Max) | Qwen3.5 122B MoE | MLX 4-bit | 69.6 | 43.7 | 1.00 |
 
 ## Context window: what you need to know
