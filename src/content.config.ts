@@ -13,6 +13,15 @@ const blog = defineCollection({
     heroImageAlt: z.string().optional(),
     tags: z.array(z.string()).optional(),
     draft: z.boolean().default(false),
+    relatedProject: z.object({
+      slug: z.string(),
+      title: z.string(),
+      description: z.string(),
+    }).optional(),
+    relatedPosts: z.array(z.object({
+      slug: z.string(),
+      title: z.string(),
+    })).optional(),
   }),
 });
 

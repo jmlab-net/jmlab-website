@@ -7,6 +7,11 @@ const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const posts = allPosts.sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
+
+const placeholderSlugs = new Set([
+  '2026-03-20-automating-content-with-ai',
+  '2026-03-15-building-my-homelab',
+]);
 ---
 
 <BaseLayout title="Blog" description="Technical writing about automation, self-hosting, Docker, AI pipelines, and homelab adventures.">
@@ -20,11 +25,6 @@ const posts = allPosts.sort(
         Writing about automation, self-hosting, infrastructure, and the occasional deep dive into
         tools I find interesting.
       </p>
-      <p class="mt-3 text-sm text-[var(--color-secondary)] font-medium">
-        This section is a work in progress — the content below is temporarily AI-generated based on
-        my self-hosted Gitea projects. Check back later for real posts. Retained for website template
-        development only.
-      </p>
     </header>
 
     <!-- Post list -->
@@ -37,9 +37,13 @@ const posts = allPosts.sort(
             pubDate={post.data.pubDate}
             slug={post.id}
             tags={post.data.tags}
+            placeholder={placeholderSlugs.has(post.id)}
           />
         ))}
       </div>
+      <p class="mt-6 text-xs text-[var(--text-muted)]">
+        <span class="text-[var(--color-secondary)]">*</span> Placeholder content — retained for site development. Will be replaced with real posts.
+      </p>
     ) : (
       <p class="text-[var(--text-muted)]">No posts yet. Check back soon.</p>
     )}

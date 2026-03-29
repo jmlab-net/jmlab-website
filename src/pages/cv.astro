@@ -11,7 +11,7 @@ const skills = sorted.filter((e) => e.data.section === 'skills');
 
 function formatDate(date?: Date | null): string {
   if (!date) return 'Present';
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', timeZone: 'UTC' });
 }
 
 const sections = [

@@ -13,6 +13,8 @@ interface Props {
   headings?: { depth: number; slug: string; text: string }[];
   prevPost?: { slug: string; title: string } | null;
   nextPost?: { slug: string; title: string } | null;
+  relatedProject?: { slug: string; title: string; description: string };
+  relatedPosts?: { slug: string; title: string }[];
 }
 
 const {
@@ -24,52 +26,103 @@ const {
   headings = [],
   prevPost,
   nextPost,
+  relatedProject,
+  relatedPosts = [],
 } = Astro.props;
 
 const formattedPubDate = pubDate.toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
+  timeZone: 'UTC',
 });
 
 const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
+  timeZone: 'UTC',
 });
 
 const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 ---
 
 <BaseLayout title={title} description={description}>
-  <article class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-    <div class="lg:grid lg:grid-cols-[1fr_240px] lg:gap-12">
-      <!-- Main content -->
-      <div>
-        <!-- Header -->
-        <header class="mb-12">
-          <div class="flex items-center gap-3 text-sm text-[var(--text-muted)] mb-4">
-            <time datetime={pubDate.toISOString()} class="font-mono">{formattedPubDate}</time>
-            {updatedDate && (
-              <>
-                <span>&middot;</span>
-                <span>Updated {formattedUpdatedDate}</span>
-              </>
-            )}
-          </div>
-          <h1 class="text-4xl sm:text-5xl font-display font-800 tracking-tight" transition:name={`blog-title-${Astro.url.pathname}`}>
-            {title}
-          </h1>
-          <p class="mt-4 text-xl text-[var(--text-muted)]">{description}</p>
-          {tags.length > 0 && (
-            <div class="mt-6">
-              <TagList tags={tags} linkable size="md" />
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex items-center gap-3 text-sm text-[var(--text-muted)] mb-4">
+        <time datetime={pubDate.toISOString()} class="font-mono">{formattedPubDate}</time>
+        {updatedDate && (
+          <>
+            <span>&middot;</span>
+            <span>Updated {formattedUpdatedDate}</span>
+          </>
+        )}
+      </div>
+      <h1 class="blog-title font-display font-800 tracking-tight" transition:name={`blog-title-${Astro.url.pathname}`}>
+        {title}
+      </h1>
+      <p class="mt-2 text-base text-[var(--text-muted)]">{description}</p>
+      {tags.length > 0 && (
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+          <TagList tags={tags} linkable size="md" />
+        </div>
+      )}
+    </header>
+
+    <!-- Two-column layout: sidebar + content -->
+    <div class="grid gap-8 lg:grid-cols-[200px_1fr]">
+      <!-- Sidebar nav -->
+      <aside class="hidden lg:block">
+        <nav class="sticky top-24">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">
+            On this page
+          </p>
+          <ul class="space-y-1 text-sm" id="blog-sidebar-nav">
+            <!-- Populated by JS from h2 headings -->
+          </ul>
+
+          {/* Related links section — Option E: project callout + secondary links */}
+          {(relatedProject || relatedPosts.length > 0) && (
+            <div class="sidebar-related">
+              <hr class="sidebar-divider" />
+
+              {relatedProject && (
+                <a href={`/projects/${relatedProject.slug}/`} class="project-callout group">
+                  <div class="project-callout-accent"></div>
+                  <p class="project-callout-label">From this project</p>
+                  <p class="project-callout-title group-hover:text-[var(--color-primary)] transition-colors">
+                    {relatedProject.title}
+                  </p>
+                  <p class="project-callout-desc">
+                    {relatedProject.description} <span class="project-callout-arrow">→</span>
+                  </p>
+                </a>
+              )}
+
+              {relatedPosts.length > 0 && (
+                <div class="also-on-jmlab">
+                  <p class="also-on-jmlab-label">Also on JMLab</p>
+                  <ul class="also-on-jmlab-list">
+                    {relatedPosts.map((rp) => (
+                      <li>
+                        <a href={`/blog/${rp.slug}/`} class="also-on-jmlab-link">
+                          {rp.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
-        </header>
+        </nav>
+      </aside>
 
-        <!-- Content -->
-        <div class="prose prose-lg max-w-none">
+      <!-- Content -->
+      <div>
+        <div class="blog-prose min-w-0">
           <slot />
         </div>
 
@@ -95,34 +148,393 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
           </nav>
         )}
       </div>
-
-      <!-- Table of Contents sidebar -->
-      {tocHeadings.length > 0 && (
-        <aside class="hidden lg:block">
-          <div class="sticky top-24">
-            <h2 class="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] mb-4">
-              On this page
-            </h2>
-            <nav aria-label="Table of contents">
-              <ul class="space-y-2 text-sm border-l border-[var(--border)]">
-                {tocHeadings.map((heading) => (
-                  <li>
-                    <a
-                      href={`#${heading.slug}`}
-                      class:list={[
-                        'block py-1 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors border-l-2 -ml-px border-transparent hover:border-[var(--color-primary)]',
-                        heading.depth === 2 ? 'pl-4' : 'pl-8',
-                      ]}
-                    >
-                      {heading.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-        </aside>
-      )}
     </div>
-  </article>
+  </div>
 </BaseLayout>
+
+<style>
+  .blog-title {
+    font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem) !important;
+  }
+
+  .blog-prose :global(h2) {
+    font-size: 1.15rem !important;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+    font-family: 'Syne Variable', sans-serif;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+  }
+
+  .blog-prose :global(h3) {
+    font-size: 1rem !important;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .blog-prose :global(p) {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .blog-prose :global(ul),
+  .blog-prose :global(ol) {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-left: 1.25rem;
+  }
+
+  .blog-prose :global(li) {
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .blog-prose :global(strong) {
+    color: var(--text);
+  }
+
+  .blog-prose :global(a) {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .blog-prose :global(a:hover) {
+    text-decoration: underline;
+  }
+
+  /* Tables */
+  .blog-prose :global(table) {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.82rem;
+    margin-top: 1rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .blog-prose :global(thead) {
+    background: var(--surface-raised);
+  }
+
+  .blog-prose :global(th) {
+    padding: 0.6rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .blog-prose :global(td) {
+    padding: 0.5rem 1rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .blog-prose :global(tr:last-child td) {
+    border-bottom: none;
+  }
+
+  .blog-prose :global(tbody tr:hover) {
+    background: var(--surface-raised);
+  }
+
+  .blog-prose :global(td code) {
+    font-size: 0.75rem;
+    padding: 0.1rem 0.25rem;
+  }
+
+  .blog-prose :global(code) {
+    font-size: 0.8rem;
+    background: var(--surface-raised);
+    padding: 0.15rem 0.35rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--border);
+  }
+
+  .blog-prose :global(pre) {
+    font-size: 0.8rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+  }
+
+  .blog-prose :global(pre code) {
+    background: none;
+    padding: 0;
+    border: none;
+    font-size: inherit;
+  }
+
+  /* Images */
+  .blog-prose :global(img) {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0.5rem;
+  }
+
+  /* Blockquotes */
+  .blog-prose :global(blockquote) {
+    border-left: 3px solid var(--color-primary);
+    padding-left: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* Horizontal rules */
+  .blog-prose :global(hr) {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  /* Section labels — full-width bar dividers between major parts of a post */
+  .blog-prose :global(.section-label) {
+    margin-top: 2.5rem;
+    margin-bottom: 1.25rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.3rem;
+    font-family: 'Syne Variable', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #fff;
+  }
+
+  .blog-prose :global(.section-label--magenta) {
+    background: var(--color-secondary);
+  }
+
+  .blog-prose :global(.section-label--teal) {
+    background: var(--color-accent);
+  }
+
+  .blog-prose :global(.section-label--chartreuse) {
+    background: var(--color-primary);
+    color: #050505;
+  }
+
+  /* Section groups — container for subsection items */
+  .blog-prose :global(.section-group) {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  /* Individual subsection items — bordered blocks within a section group */
+  .blog-prose :global(.section-item) {
+    padding-left: 0.85rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .blog-prose :global(.section-group--magenta .section-item) {
+    border-left: 3px solid var(--color-secondary);
+  }
+
+  .blog-prose :global(.section-group--teal .section-item) {
+    border-left: 3px solid var(--color-accent);
+  }
+
+  .blog-prose :global(.section-group--chartreuse .section-item) {
+    border-left: 3px solid var(--color-primary);
+  }
+
+  /* First element inside a section item shouldn't have extra top margin */
+  .blog-prose :global(.section-item > *:first-child) {
+    margin-top: 0.5rem;
+  }
+
+  /* Sidebar nav styling */
+  #blog-sidebar-nav :global(a) {
+    display: block;
+    padding: 0.25rem 0.5rem;
+    border-left: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+
+  #blog-sidebar-nav :global(a:hover) {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  #blog-sidebar-nav :global(a.active) {
+    color: var(--color-primary);
+    border-left-color: var(--color-primary);
+  }
+
+  /* Sidebar related links section */
+  .sidebar-related {
+    margin-top: 1rem;
+  }
+
+  .sidebar-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0 0 1rem 0;
+  }
+
+  .project-callout {
+    display: block;
+    position: relative;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 0.4rem;
+    padding: 0.75rem 0.65rem 0.65rem;
+    overflow: hidden;
+    text-decoration: none;
+    transition: border-color 0.15s;
+  }
+
+  .project-callout:hover {
+    border-color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .project-callout-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--color-accent);
+    border-radius: 0.4rem 0.4rem 0 0;
+  }
+
+  .project-callout-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+    margin: 0 0 0.35rem 0;
+    line-height: 1;
+  }
+
+  .project-callout-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 0.25rem 0;
+    line-height: 1.3;
+  }
+
+  .project-callout-desc {
+    font-size: 0.7rem;
+    color: var(--color-primary);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .project-callout-arrow {
+    display: inline;
+  }
+
+  .also-on-jmlab {
+    margin-top: 0.85rem;
+  }
+
+  .also-on-jmlab-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 0 0 0.4rem 0;
+    line-height: 1;
+  }
+
+  .also-on-jmlab-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .also-on-jmlab-list li {
+    margin-bottom: 0.25rem;
+  }
+
+  .also-on-jmlab-link {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 0.15rem 0;
+    transition: color 0.15s;
+  }
+
+  .also-on-jmlab-link::before {
+    content: "·  ";
+  }
+
+  .also-on-jmlab-link:hover {
+    color: var(--text);
+    text-decoration: none;
+  }
+</style>
+
+<script>
+  function initBlogNav() {
+    const nav = document.getElementById('blog-sidebar-nav');
+    const headings = document.querySelectorAll('.blog-prose h2');
+    if (!nav || headings.length === 0) return;
+
+    nav.innerHTML = '';
+
+    headings.forEach((h2, i) => {
+      if (!h2.id) h2.id = `section-${i}`;
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = `#${h2.id}`;
+      a.textContent = h2.textContent || '';
+      li.appendChild(a);
+      nav.appendChild(li);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            nav.querySelectorAll('a').forEach((a) => a.classList.remove('active'));
+            const active = nav.querySelector(`a[href="#${entry.target.id}"]`);
+            if (active) active.classList.add('active');
+          }
+        });
+      },
+      { rootMargin: '-80px 0px -70% 0px', threshold: 0 }
+    );
+
+    headings.forEach((h2) => observer.observe(h2));
+  }
+
+  initBlogNav();
+  document.addEventListener('astro:after-swap', initBlogNav);
+</script>

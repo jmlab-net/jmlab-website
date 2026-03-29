@@ -7,14 +7,16 @@ interface Props {
   pubDate: Date;
   slug: string;
   tags?: string[];
+  placeholder?: boolean;
 }
 
-const { title, description, pubDate, slug, tags = [] } = Astro.props;
+const { title, description, pubDate, slug, tags = [], placeholder = false } = Astro.props;
 
 const formattedDate = pubDate.toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'short',
   day: 'numeric',
+  timeZone: 'UTC',
 });
 ---
 
@@ -25,7 +27,7 @@ const formattedDate = pubDate.toLocaleDateString('en-US', {
     </time>
     <div class="flex-1 min-w-0">
       <h3 class="text-lg font-display font-bold text-[var(--text)] group-hover:text-[var(--color-primary)] transition-colors">
-        {title}
+        {title}{placeholder && <span class="text-[var(--color-secondary)]">*</span>}
       </h3>
       <p class="mt-1 text-sm text-[var(--text-muted)] line-clamp-2">
         {description}

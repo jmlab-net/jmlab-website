@@ -4,21 +4,60 @@ description: "Model recommendations for every M5 MacBook memory tier — 16 GB t
 pubDate: 2026-03-29
 tags: ["llm", "apple-silicon", "benchmarks", "lm-studio", "local-ai"]
 draft: false
+relatedProject:
+  slug: "m5-macbook-benchmark-pipeline"
+  title: "M5 MacBook Benchmark Pipeline"
+  description: "Full scores, methodology, and raw data"
 ---
 
-I ran 14 open-weight LLMs through a structured benchmark pipeline on an M5 MacBook Pro with 128 GB of unified memory — four benchmark categories, three temperature settings, over 2,400 scored prompt runs. The [full project writeup](/projects/m5-macbook-benchmark-pipeline) has the methodology and raw data. This post is the practical version: which models should you run on your specific machine?
+The 2026 M5 MacBook lineup spans three practical memory tiers for local LLMs: 16 GB, 32–64 GB, and 128 GB. Each tier opens up a different class of model. On Apple Silicon, the GPU and CPU share a single unified memory pool — when you load a model in LM Studio, the quantized model file loads entirely into this shared memory. A 70 GB model uses 70 GB of your RAM, leaving less for your OS, browser, IDE, and everything else.
 
-The 2026 M5 MacBook lineup spans three practical memory tiers for local LLMs: 16 GB, 32–64 GB, and 128 GB. Each tier opens up a different class of model.
+**Reserve at least 8 GB for macOS and light apps.** If you're running an IDE, a browser with a dozen tabs, and Slack, budget closer to 16 GB. Memory bandwidth also matters — the M5 Max delivers 614 GB/s (4x the MacBook Air's 153 GB/s), which means noticeably faster token generation, especially with MLX models. Getting set up only takes a few minutes, and once you understand how formats, context length, and temperature shape performance, picking the right model for your machine is straightforward. The [full benchmark data](/projects/m5-macbook-benchmark-pipeline) has per-category scores, format comparisons, and the exact prompts used.
 
-## How local LLMs use your MacBook's memory
+<div class="section-label section-label--teal">Set it up</div>
 
-On Apple Silicon, the GPU and CPU share a single unified memory pool. When you load a model in LM Studio, the quantized model file loads entirely into this shared memory — a 70 GB model uses 70 GB of your RAM. That's memory your OS, browser, IDE, and everything else can't use.
+<div class="section-group section-group--teal">
 
-**Reserve at least 8 GB for macOS and light apps.** If you're running an IDE, a browser with a dozen tabs, and Slack, budget closer to 16 GB. Context windows add overhead too — roughly 1–2 GB extra per 8K tokens of context on larger models.
+<div class="section-item">
 
-Memory bandwidth also matters. The M5 Max delivers 614 GB/s — 4x the MacBook Air's 153 GB/s. Higher bandwidth means faster token generation, especially with MLX models. The same model will run noticeably faster on a Max than on an Air.
+## Setup guide
 
-## 16 GB — MacBook Air or MacBook Pro M5
+### LM Studio
+
+All models in this post were tested with [LM Studio](https://lmstudio.ai), a desktop app for running local LLMs on macOS, Windows, and Linux. Download it, open it, and search for any model by name — it handles downloading, quantization format selection, and GPU offloading automatically. No terminal required. LM Studio also exposes an OpenAI-compatible API at `localhost:1234`, so anything that talks to the OpenAI API (scripts, VS Code extensions, other apps) can use your local model as a drop-in replacement. To set the context length, open the model settings panel before loading.
+
+I ran 14 open-weight LLMs through a structured benchmark pipeline on an M5 MacBook Pro with 128 GB of unified memory — four benchmark categories, three temperature settings, over 2,400 scored prompt runs. The [full project writeup](/projects/m5-macbook-benchmark-pipeline) has the methodology and raw data. Here are the top picks per tier:
+
+| Your MacBook | Model to Run | Format | GB | tok/s | Accuracy |
+|-------------|-------------|--------|-----|-------|----------|
+| 16 GB (Air/Pro M5) | Qwen2.5 VL 7B | GGUF Q4_K_M | 4.8 | 69.8 | 0.90 |
+| 32–64 GB (best accuracy) | Qwen2.5 Coder 32B | MLX 4-bit | 18.3 | 19.4 | 0.91 |
+| 32–64 GB (best speed) | Mistral Small 24B | MLX 4-bit | 14.1 | 28.0 | 0.88 |
+| 48–64 GB (step up) | Llama 3.3 70B | MLX 4-bit | 39.7 | 9.0 | 0.90 |
+| 128 GB (Pro M5 Max) | Qwen3.5 122B MoE | MLX 4-bit | 69.6 | 43.7 | 1.00 |
+
+### GGUF vs MLX
+
+Both formats are quantized model files that run on Apple Silicon. The practical differences:
+
+- **MLX was faster for 6 of 11 models** tested, with speedups up to 38%. The advantage is larger on higher-bandwidth chips (M5 Pro and Max).
+- **GGUF was faster for 5 of 11 models**, sometimes dramatically — Qwen2.5 VL 7B ran 45% faster in GGUF.
+- **Accuracy differences were minimal** — within 1–3% for the same model.
+- **GGUF has wider availability.** Not every model has an MLX version.
+
+Try MLX first if your model has both formats. Switch to GGUF if it feels slow. On a MacBook Air (lower bandwidth), GGUF may outperform MLX more often.
+
+</div>
+
+</div>
+
+<div class="section-label section-label--magenta">Pick your model</div>
+
+<div class="section-group section-group--magenta">
+
+<div class="section-item">
+
+## 16–24 GB: <7B models
 
 **Available on:** MacBook Air M5, MacBook Pro 14" M5 (base)
 
@@ -32,7 +71,11 @@ This was the efficiency champion of the entire benchmark. At 4.8 GB it fits comf
 
 **Also fits:** Phi-4 14B (GGUF Q4_K_M, 7.9 GB) — 35.7 tok/s, 0.88 accuracy. A strong all-rounder if you can spare the extra 3 GB over Qwen2.5 VL 7B, though it's half the speed.
 
-## 32–64 GB — MacBook Air M5 to MacBook Pro M5 Max
+</div>
+
+<div class="section-item">
+
+## 32–64 GB: <70B models
 
 **Available on:** MacBook Air M5 (32 GB), MacBook Pro M5 (32 GB), MacBook Pro M5 Pro (36–64 GB), MacBook Pro M5 Max (36–64 GB)
 
@@ -60,7 +103,11 @@ The largest dense (non-MoE) model tested. Solid accuracy but notably slow — 9 
 
 **A note on the gap:** There's a real gap in available models between ~20 GB and ~40 GB. The 32B-class models top out around 18 GB, and the next meaningful step up is Llama 3.3 70B at 40 GB. Models like Qwen3 30B-A3B MoE (~17 GB) and Qwen3 32B (~19 GB) are promising newer releases in this space but weren't part of this benchmark — they're worth testing if you want to make the most of a 48 or 64 GB machine. This is an area I plan to expand in a future round of benchmarks.
 
-## 128 GB — MacBook Pro M5 Max
+</div>
+
+<div class="section-item">
+
+## 128 GB: 120B+ models
 
 **Available on:** MacBook Pro 14"/16" M5 Max (top config)
 
@@ -78,19 +125,21 @@ GGUF-only (no MLX variant available). Strong across all categories, especially m
 
 The largest model tested — 229 billion parameters running locally on a laptop. At 100 GB it leaves only ~12 GB for the OS, so close everything else. Despite its size, it runs at 45.7 tok/s in MLX — faster than many 32B models. The GGUF variant (101 GB, 38.3 tok/s) also scored 0.98.
 
-## Quick reference
+</div>
 
-| Your MacBook | Model to Run | Format | GB | tok/s | Accuracy |
-|-------------|-------------|--------|-----|-------|----------|
-| 16 GB (Air/Pro M5) | Qwen2.5 VL 7B | GGUF Q4_K_M | 4.8 | 69.8 | 0.90 |
-| 32–64 GB (best accuracy) | Qwen2.5 Coder 32B | MLX 4-bit | 18.3 | 19.4 | 0.91 |
-| 32–64 GB (best speed) | Mistral Small 24B | MLX 4-bit | 14.1 | 28.0 | 0.88 |
-| 48–64 GB (step up) | Llama 3.3 70B | MLX 4-bit | 39.7 | 9.0 | 0.90 |
-| 128 GB (Pro M5 Max) | Qwen3.5 122B MoE | MLX 4-bit | 69.6 | 43.7 | 1.00 |
+</div>
 
-## Context window: what you need to know
+<div class="section-label section-label--chartreuse">Tune it</div>
 
-Every model was loaded with a specific context length via `lms load --context-length N`. Larger context windows let the model "see" more of your conversation or document, but they cost memory and can reduce throughput.
+<div class="section-group section-group--chartreuse">
+
+<div class="section-item">
+
+## Model tuning
+
+### Context windows
+
+Context length controls how much of your conversation or document the model can "see" at once. Larger windows cost more memory and can reduce throughput.
 
 **For most tasks — chat, code completion, quick questions — 4K to 8K context is plenty.** You'll get the best speed at these sizes.
 
@@ -102,7 +151,7 @@ Every model was loaded with a specific context length via `lms load --context-le
 - Every doubling of context adds memory overhead. On 70B+ models, going from 8K to 32K can add 4–8 GB.
 - If you're choosing between a bigger model at 8K context or a smaller model at 32K, the bigger model at 8K usually gives better answers.
 
-## Temperature: when to change it
+### Temperature
 
 Temperature controls randomness in the model's output. I tested every model at 0.0, 0.3, and 0.7.
 
@@ -114,19 +163,6 @@ Temperature controls randomness in the model's output. I tested every model at 0
 
 **Rule of thumb:** 0.0–0.3 for tasks with correct answers. 0.5–0.7 for tasks where variety is valuable.
 
-## GGUF vs MLX: which format to use
+</div>
 
-Both formats are quantized model files that run on Apple Silicon. The practical differences:
-
-- **MLX was faster for 6 of 11 models** tested, with speedups up to 38%. The advantage is larger on higher-bandwidth chips (M5 Pro and Max).
-- **GGUF was faster for 5 of 11 models**, sometimes dramatically — Qwen2.5 VL 7B ran 45% faster in GGUF.
-- **Accuracy differences were minimal** — within 1–3% for the same model.
-- **GGUF has wider availability.** Not every model has an MLX version.
-
-Try MLX first if your model has both formats. Switch to GGUF if it feels slow. On a MacBook Air (lower bandwidth), GGUF may outperform MLX more often.
-
-## Bottom line
-
-Every M5 MacBook can run local LLMs — the question is which ones. A 16 GB Air with Qwen2.5 VL 7B gets you 90% accuracy at 70 tokens per second from a 4.8 GB model. A 128 GB Max with Qwen3.5 122B MoE gets you a perfect score. Pick your tier, start with 8K context and T=0.3, and adjust from there.
-
-The [full benchmark data](/projects/m5-macbook-benchmark-pipeline) is available if you want per-category scores, format comparisons, or the exact prompts used.
+</div>

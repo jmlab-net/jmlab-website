@@ -33,6 +33,8 @@ const { Content, headings } = await render(post);
   headings={headings}
   prevPost={prevPost}
   nextPost={nextPost}
+  relatedProject={post.data.relatedProject}
+  relatedPosts={post.data.relatedPosts}
 >
   <Content />
 </BlogLayout>
