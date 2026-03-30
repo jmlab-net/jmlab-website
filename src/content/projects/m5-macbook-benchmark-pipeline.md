@@ -1,6 +1,6 @@
 ---
-title: "Benchmarking Local LLMs on the M5 MacBook Pro"
-description: "Testing what 128 GB of Apple Silicon can do: 14 local LLMs benchmarked in GGUF and MLX across four categories on an M5 MacBook Pro"
+title: "Benchmarking Local LLMs on the M5 Max MacBook Pro"
+description: "Testing what 128 GB of Apple Silicon can do: 14 local LLMs benchmarked in GGUF and MLX across four categories on an M5 Max MacBook Pro"
 technologies: ["n8n", "javascript", "python", "postgresql", "docker", "bash"]
 featured: true
 sortOrder: 1
@@ -8,11 +8,11 @@ sortOrder: 1
 
 ## Abstract
 
-The M5 MacBook Pro with 128 GB of unified memory represents a new tier of consumer hardware for local LLM inference. This project presents an automated benchmarking pipeline that evaluated 14 models across four categories (GSM8K, HumanEval, MMLU, IFEval) in both GGUF and MLX formats where available, using two-layer scoring — deterministic automated validation combined with independent five-dimension rubric review. Across over 2,400 scored prompt runs at three temperatures, the top performers — Qwen3.5 122B MoE (1.00 rubric average), Nemotron Super ~120B and MiniMax M2.5 229B (MLX) (each 0.98) — demonstrated strong results from quantized local inference, while Qwen2.5 VL 7B delivered 0.90 accuracy at 69.8 tokens/second — 3x faster than comparably accurate models at a fraction of the parameter count.
+The M5 Max MacBook Pro with 128 GB of unified memory represents a new tier of consumer hardware for local LLM inference. This project presents an automated benchmarking pipeline that evaluated 14 models across four categories (GSM8K, HumanEval, MMLU, IFEval) in both GGUF and MLX formats where available, using two-layer scoring — deterministic automated validation combined with independent five-dimension rubric review. Across over 2,400 scored prompt runs at three temperatures, the top performers — Qwen3.5 122B MoE (1.00 rubric average), Nemotron Super ~120B and MiniMax M2.5 229B (MLX) (each 0.98) — demonstrated strong results from quantized local inference, while Qwen2.5 VL 7B delivered 0.90 accuracy at 69.8 tokens/second — 3x faster than comparably accurate models at a fraction of the parameter count.
 
 ## Introduction
 
-Consumer Apple Silicon hardware can now run large language models locally with meaningful throughput. The M5 MacBook Pro with 128 GB of unified memory supports models up to 229 billion parameters via quantized inference in LM Studio. This project set out to answer a practical question: across a wide range of open-weight models, what accuracy and throughput can you actually expect from local inference on this hardware?
+Consumer Apple Silicon hardware can now run large language models locally with meaningful throughput. The M5 Max MacBook Pro with 128 GB of unified memory supports models up to 229 billion parameters via quantized inference in LM Studio. This project set out to answer a practical question: across a wide range of open-weight models, what accuracy and throughput can you actually expect from local inference on this hardware?
 
 To test this systematically, the project uses an automated pipeline that:
 
@@ -44,11 +44,11 @@ The pipeline evaluated 14 models — 11 tested in both GGUF and MLX formats — 
 
 ### Test Architecture
 
-The pipeline is an n8n workflow running in Docker on an Unraid server, communicating with the MacBook Pro over the local network via SSH and HTTP.
+The pipeline is an n8n workflow running in Docker on an Unraid server, communicating with the M5 Max MacBook Pro over the local network via SSH and HTTP.
 
 ![n8n Benchmark Runner workflow](../../assets/projects/benchmark-workflow-screenshot.png)
 
-The workflow iterates through each model sequentially. For each model, it SSH-es into the MacBook Pro to load the model via `lms load <model_id> --context-length N`, executes 20 prompts against LM Studio's OpenAI-compatible API (`/v1/chat/completions`), applies Layer 1 automated scoring (deterministic pass/fail), persists results to PostgreSQL, posts progress to Mattermost, and unloads the model via `lms unload --all` before proceeding to the next. After all models complete, a separate Layer 2 rubric review is performed by Claude (via API), scoring each stored response across five qualitative dimensions.
+The workflow iterates through each model sequentially. For each model, it SSH-es into the M5 Max MacBook Pro to load the model via `lms load <model_id> --context-length N`, executes 20 prompts against LM Studio's OpenAI-compatible API (`/v1/chat/completions`), applies Layer 1 automated scoring (deterministic pass/fail), persists results to PostgreSQL, posts progress to Mattermost, and unloads the model via `lms unload --all` before proceeding to the next. After all models complete, a separate Layer 2 rubric review is performed by Claude (via API), scoring each stored response across five qualitative dimensions.
 
 ### Benchmark Selection
 
@@ -181,7 +181,7 @@ The `prompt_results` table stores the model's raw response alongside the automat
 
 ### Hardware Configuration
 
-**Inference host:** M5 MacBook Pro, Apple M5 chip, 128 GB unified memory. Models served via LM Studio's OpenAI-compatible API on the local network.
+**Inference host:** M5 Max MacBook Pro, Apple M5 Max chip, 128 GB unified memory. Models served via LM Studio's OpenAI-compatible API on the local network.
 
 **Orchestration host:** Unraid server running n8n v2.37.4 (Docker), PostgreSQL 16, and Mattermost (notifications).
 
@@ -285,7 +285,7 @@ Storing results in PostgreSQL rather than flat files transformed the project fro
 
 ### Limitations
 
-This evaluation has several constraints. All inference ran on a single machine (M5 MacBook Pro, 128 GB unified memory), limiting the maximum model size to approximately 108 GB RAM. Quantized models (4-bit, 3-bit) were tested rather than full-precision weights, which may affect accuracy relative to published benchmarks. The prompt set (20 per model) is small compared to full benchmark suites (GSM8K contains 8,792 problems; HumanEval contains 164). Results reflect local inference characteristics and are not directly comparable to cloud-hosted evaluations.
+This evaluation has several constraints. All inference ran on a single machine (M5 Max MacBook Pro, 128 GB unified memory), limiting the maximum model size to approximately 108 GB RAM. Quantized models (4-bit, 3-bit) were tested rather than full-precision weights, which may affect accuracy relative to published benchmarks. The prompt set (20 per model) is small compared to full benchmark suites (GSM8K contains 8,792 problems; HumanEval contains 164). Results reflect local inference characteristics and are not directly comparable to cloud-hosted evaluations.
 
 ### Future Work
 

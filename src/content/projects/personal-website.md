@@ -2,7 +2,7 @@
 title: "Personal Website"
 description: "AI-automated personal website built with Astro, with an automated content pipeline powered by local AI and workflow automation"
 technologies: ["astro", "tailwind", "typescript", "docker"]
-featured: true
+featured: false
 sortOrder: 2
 ---
 

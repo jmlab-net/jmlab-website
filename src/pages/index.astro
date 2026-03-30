@@ -2,43 +2,86 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/sections/Hero.astro';
 import ProjectCard from '../components/common/ProjectCard.astro';
+import BlogCard from '../components/common/BlogCard.astro';
 import { getCollection } from 'astro:content';
 
 const allProjects = await getCollection('projects');
 const featuredProjects = allProjects
   .filter((p) => p.data.featured)
   .sort((a, b) => (a.data.sortOrder ?? 99) - (b.data.sortOrder ?? 99));
+
+const allPosts = await getCollection('blog');
+const featuredPosts = allPosts
+  .filter((p) => p.data.featured && !p.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <BaseLayout title="Home">
   <Hero />
 
-  <!-- Featured Projects -->
+  <!-- Featured Content -->
   <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex items-end justify-between mb-8">
+    <div class="flex flex-col gap-12">
+
+      <!-- Featured Posts -->
       <div>
-        <h2 class="font-display font-800 tracking-tight">
-          Featured <span class="gradient-text">Projects</span>
-        </h2>
-        <p class="mt-1.5 text-sm text-[var(--text-muted)]">Things I've built and am building</p>
+        <div class="flex items-end justify-between mb-6">
+          <div>
+            <h2 class="font-display font-800 tracking-tight">
+              Featured <span class="gradient-text">Posts</span>
+            </h2>
+            <p class="mt-1.5 text-sm text-[var(--text-muted)]">Recent writing on local AI, benchmarks, and dev tools</p>
+          </div>
+          <a href="/blog/" class="hidden sm:inline-flex items-center gap-2 text-sm text-[var(--color-primary)] hover:underline font-medium">
+            View all
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+        <div class="flex flex-col gap-4">
+          {featuredPosts.map((post) => (
+            <BlogCard
+              title={post.data.title}
+              description={post.data.description}
+              slug={post.id}
+              pubDate={post.data.pubDate}
+              tags={post.data.tags}
+              featured={post.data.featured}
+            />
+          ))}
+        </div>
       </div>
-      <a href="/projects/" class="hidden sm:inline-flex items-center gap-2 text-sm text-[var(--color-primary)] hover:underline font-medium">
-        View all
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg>
-      </a>
-    </div>
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {featuredProjects.map((project) => (
-        <ProjectCard
-          title={project.data.title}
-          description={project.data.description}
-          slug={project.id}
-          technologies={project.data.technologies}
-          featured={project.data.featured}
-        />
-      ))}
+
+      <!-- Featured Projects -->
+      <div>
+        <div class="flex items-end justify-between mb-6">
+          <div>
+            <h2 class="font-display font-800 tracking-tight">
+              Featured <span class="gradient-text">Projects</span>
+            </h2>
+            <p class="mt-1.5 text-sm text-[var(--text-muted)]">Things I've built and am building</p>
+          </div>
+          <a href="/projects/" class="hidden sm:inline-flex items-center gap-2 text-sm text-[var(--color-primary)] hover:underline font-medium">
+            View all
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+        <div class="flex flex-col gap-4">
+          {featuredProjects.map((project) => (
+            <ProjectCard
+              title={project.data.title}
+              description={project.data.description}
+              slug={project.id}
+              technologies={project.data.technologies}
+              featured={project.data.featured}
+            />
+          ))}
+        </div>
+      </div>
+
     </div>
   </section>
 </BaseLayout>

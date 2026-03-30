@@ -1,0 +1,171 @@
+<svg viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      text { font-family: 'Segoe UI', system-ui, sans-serif; }
+      .title    { font-size: 20px; font-weight: 700; fill: #E5E5E5; }
+      .subtitle { font-size: 13px; fill: #A0A0A0; }
+      .label    { font-size: 12px; font-weight: 600; fill: #E5E5E5; }
+      .axis-label { font-size: 13px; font-weight: 600; fill: #A0A0A0; }
+      .tick     { font-size: 11px; fill: #757575; }
+      .caption  { font-size: 10px; fill: #757575; }
+      .memory-text { font-size: 11px; fill: #757575; }
+      .badge    { font-size: 10px; font-weight: 700; }
+      .grid-line { stroke: #2A2A3A; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="560" fill="#141419" rx="12"/>
+
+  <!-- Title and subtitle -->
+  <text x="50" y="30" class="title">Speed vs Memory: Every Model Tested</text>
+  <text x="50" y="48" class="subtitle">Sorted by throughput — color shows memory tier, GB shown at left</text>
+
+  <!-- Chart background -->
+  <rect x="250" y="70" width="670" height="450" fill="#1E1E26" stroke="#2A2A3A" stroke-width="1" rx="4"/>
+
+  <!-- X-axis (tok/s) -->
+  <line x1="250" y1="520" x2="920" y2="520" stroke="#2A2A3A" stroke-width="2"/>
+  <!-- Y-axis (left edge) -->
+  <line x1="250" y1="70" x2="250" y2="520" stroke="#2A2A3A" stroke-width="2"/>
+
+  <!-- X-axis ticks and labels -->
+  <line x1="250" y1="520" x2="250" y2="525" stroke="#757575" stroke-width="1"/>
+  <text x="250" y="540" text-anchor="middle" class="tick">0</text>
+
+  <line x1="371" y1="520" x2="371" y2="525" stroke="#757575" stroke-width="1"/>
+  <text x="371" y="540" text-anchor="middle" class="tick">30</text>
+
+  <line x1="492" y1="520" x2="492" y2="525" stroke="#757575" stroke-width="1"/>
+  <text x="492" y="540" text-anchor="middle" class="tick">60</text>
+
+  <line x1="613" y1="520" x2="613" y2="525" stroke="#757575" stroke-width="1"/>
+  <text x="613" y="540" text-anchor="middle" class="tick">90</text>
+
+  <line x1="734" y1="520" x2="734" y2="525" stroke="#757575" stroke-width="1"/>
+  <text x="734" y="540" text-anchor="middle" class="tick">120</text>
+
+  <line x1="920" y1="520" x2="920" y2="525" stroke="#757575" stroke-width="1"/>
+  <text x="920" y="540" text-anchor="middle" class="tick">150</text>
+
+  <!-- Vertical grid lines -->
+  <line x1="371" y1="70" x2="371" y2="520" class="grid-line"/>
+  <line x1="492" y1="70" x2="492" y2="520" class="grid-line"/>
+  <line x1="613" y1="70" x2="613" y2="520" class="grid-line"/>
+  <line x1="734" y1="70" x2="734" y2="520" class="grid-line"/>
+
+  <!-- Axis label -->
+  <text x="585" y="555" text-anchor="middle" class="axis-label">Throughput (tok/s)</text>
+
+  <!-- Data points (sorted by tok/s descending) -->
+  <!-- Formula: x = (toks / 150) * 670 + 250, y = 70 + (index * 37) -->
+
+  <!-- 1. DeepSeek Coder V2 Lite: 144 tok/s, 8.8 GB (16GB tier - Magenta) -->
+  <!-- x = (144/150) * 670 + 250 = 915.2 -->
+  <line x1="250" y1="87" x2="915.2" y2="87" stroke="#757575" stroke-width="1"/>
+  <circle cx="915.2" cy="87" r="5" fill="#FF3CA0"/>
+  <text x="240" y="92" text-anchor="end" class="label">DeepSeek V2 Lite</text>
+  <text x="240" y="105" text-anchor="end" class="memory-text">8.8 GB</text>
+  <text x="920" y="92" class="label">144</text>
+
+  <!-- 2. Qwen2.5 VL 7B: 69.8 tok/s, 4.8 GB (16GB tier - Magenta) -->
+  <!-- x = (69.8/150) * 670 + 250 = 562.84 -->
+  <line x1="250" y1="124" x2="562.84" y2="124" stroke="#757575" stroke-width="1"/>
+  <circle cx="562.84" cy="124" r="5" fill="#FF3CA0"/>
+  <text x="240" y="129" text-anchor="end" class="label">Qwen2.5 VL 7B</text>
+  <text x="240" y="142" text-anchor="end" class="memory-text">4.8 GB</text>
+  <text x="570" y="129" class="label">69.8</text>
+
+  <!-- 3. Qwen2.5 Coder 7B: 54.0 tok/s, 8.1 GB (16GB tier - Magenta) -->
+  <!-- x = (54.0/150) * 670 + 250 = 491.6 -->
+  <line x1="250" y1="161" x2="491.6" y2="161" stroke="#757575" stroke-width="1"/>
+  <circle cx="491.6" cy="161" r="5" fill="#FF3CA0"/>
+  <text x="240" y="166" text-anchor="end" class="label">Qwen2.5 Coder 7B</text>
+  <text x="240" y="179" text-anchor="end" class="memory-text">8.1 GB</text>
+  <text x="500" y="166" class="label">54.0</text>
+
+  <!-- 4. MiniMax M2.5 229B: 45.7 tok/s, 100.1 GB (128GB tier - Chartreuse) -->
+  <!-- x = (45.7/150) * 670 + 250 = 454.51 -->
+  <line x1="250" y1="198" x2="454.51" y2="198" stroke="#757575" stroke-width="1"/>
+  <circle cx="454.51" cy="198" r="5" fill="#B9F43B"/>
+  <text x="240" y="203" text-anchor="end" class="label">MiniMax M2.5 229B</text>
+  <text x="240" y="216" text-anchor="end" class="memory-text">100.1 GB</text>
+  <text x="463" y="203" class="label">45.7</text>
+
+  <!-- 5. Qwen3.5 122B MoE: 43.7 tok/s, 69.6 GB (128GB tier - Chartreuse) -->
+  <!-- x = (43.7/150) * 670 + 250 = 446.32 -->
+  <line x1="250" y1="235" x2="446.32" y2="235" stroke="#757575" stroke-width="1"/>
+  <circle cx="446.32" cy="235" r="5" fill="#B9F43B"/>
+  <text x="240" y="240" text-anchor="end" class="label">Qwen3.5 122B MoE</text>
+  <text x="240" y="253" text-anchor="end" class="memory-text">69.6 GB</text>
+  <text x="455" y="240" class="label">43.7</text>
+
+  <!-- 6. Qwen2.5 14B 1M: 36.5 tok/s, 8.3 GB (32-64GB tier - Teal) -->
+  <!-- x = (36.5/150) * 670 + 250 = 414.3 -->
+  <line x1="250" y1="272" x2="414.3" y2="272" stroke="#757575" stroke-width="1"/>
+  <circle cx="414.3" cy="272" r="5" fill="#00BFA5"/>
+  <text x="240" y="277" text-anchor="end" class="label">Qwen2.5 14B 1M</text>
+  <text x="240" y="290" text-anchor="end" class="memory-text">8.3 GB</text>
+  <text x="423" y="277" class="label">36.5</text>
+
+  <!-- 7. Phi-4 14B: 35.7 tok/s, 7.9 GB (16GB tier - Magenta) -->
+  <!-- x = (35.7/150) * 670 + 250 = 409.78 -->
+  <line x1="250" y1="309" x2="409.78" y2="309" stroke="#757575" stroke-width="1"/>
+  <circle cx="409.78" cy="309" r="5" fill="#FF3CA0"/>
+  <text x="240" y="314" text-anchor="end" class="label">Phi-4 14B</text>
+  <text x="240" y="327" text-anchor="end" class="memory-text">7.9 GB</text>
+  <text x="418" y="314" class="label">35.7</text>
+
+  <!-- 8. Mistral Small 24B: 28.0 tok/s, 14.1 GB (32-64GB tier - Teal) -->
+  <!-- x = (28.0/150) * 670 + 250 = 375.47 -->
+  <line x1="250" y1="346" x2="375.47" y2="346" stroke="#757575" stroke-width="1"/>
+  <circle cx="375.47" cy="346" r="5" fill="#00BFA5"/>
+  <text x="240" y="351" text-anchor="end" class="label">Mistral Small 24B</text>
+  <text x="240" y="364" text-anchor="end" class="memory-text">14.1 GB</text>
+  <text x="384" y="351" class="label">28.0</text>
+
+  <!-- 9. Nemotron Super 120B: 27.6 tok/s, 85.0 GB (128GB tier - Chartreuse) -->
+  <!-- x = (27.6/150) * 670 + 250 = 373.28 -->
+  <line x1="250" y1="383" x2="373.28" y2="383" stroke="#757575" stroke-width="1"/>
+  <circle cx="373.28" cy="383" r="5" fill="#B9F43B"/>
+  <text x="240" y="388" text-anchor="end" class="label">Nemotron Super 120B</text>
+  <text x="240" y="401" text-anchor="end" class="memory-text">85.0 GB</text>
+  <text x="382" y="388" class="label">27.6</text>
+
+  <!-- 10. Qwen2.5 Coder 32B: 19.4 tok/s, 18.3 GB (32-64GB tier - Teal) -->
+  <!-- x = (19.4/150) * 670 + 250 = 336.79 -->
+  <line x1="250" y1="420" x2="336.79" y2="420" stroke="#757575" stroke-width="1"/>
+  <circle cx="336.79" cy="420" r="5" fill="#00BFA5"/>
+  <text x="240" y="425" text-anchor="end" class="label">Qwen2.5 Coder 32B</text>
+  <text x="240" y="438" text-anchor="end" class="memory-text">18.3 GB</text>
+  <text x="345" y="425" class="label">19.4</text>
+
+  <!-- 11. DeepSeek R1 32B: 15.8 tok/s, 18.0 GB (32-64GB tier - Teal) -->
+  <!-- x = (15.8/150) * 670 + 250 = 320.6 -->
+  <line x1="250" y1="457" x2="320.6" y2="457" stroke="#757575" stroke-width="1"/>
+  <circle cx="320.6" cy="457" r="5" fill="#00BFA5"/>
+  <text x="240" y="462" text-anchor="end" class="label">DeepSeek R1 32B</text>
+  <text x="240" y="475" text-anchor="end" class="memory-text">18.0 GB</text>
+  <text x="329" y="462" class="label">15.8</text>
+
+  <!-- 12. Llama 3.3 70B: 9.0 tok/s, 39.7 GB (32-64GB tier - Teal) -->
+  <!-- x = (9.0/150) * 670 + 250 = 290.2 -->
+  <line x1="250" y1="494" x2="290.2" y2="494" stroke="#757575" stroke-width="1"/>
+  <circle cx="290.2" cy="494" r="5" fill="#00BFA5"/>
+  <text x="240" y="499" text-anchor="end" class="label">Llama 3.3 70B</text>
+  <text x="240" y="512" text-anchor="end" class="memory-text">39.7 GB</text>
+  <text x="299" y="499" class="label">9.0</text>
+
+  <!-- Legend (inside chart, bottom-right) -->
+  <rect x="740" y="480" width="170" height="32" rx="4" fill="#141419" opacity="0.85"/>
+  <g transform="translate(748, 501)">
+    <circle cx="0" cy="-4" r="4" fill="#FF3CA0"/>
+    <text x="8" y="0" class="caption">16GB</text>
+
+    <circle cx="58" cy="-4" r="4" fill="#00BFA5"/>
+    <text x="66" y="0" class="caption">32-64GB</text>
+
+    <circle cx="132" cy="-4" r="4" fill="#B9F43B"/>
+    <text x="140" y="0" class="caption">128GB</text>
+  </g>
+</svg>

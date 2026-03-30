@@ -1,0 +1,89 @@
+<svg viewBox="0 0 960 340" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#A0A0A0"/>
+    </marker>
+    <style>
+      text { font-family: 'Segoe UI', system-ui, sans-serif; }
+      .title    { font-size: 20px; font-weight: 700; fill: #E5E5E5; }
+      .subtitle { font-size: 13px; fill: #A0A0A0; }
+      .label    { font-size: 12px; font-weight: 600; fill: #E5E5E5; }
+      .axis-label { font-size: 13px; font-weight: 600; fill: #A0A0A0; }
+      .tick     { font-size: 11px; fill: #757575; }
+      .caption  { font-size: 10px; fill: #757575; }
+      .badge    { font-size: 10px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <!-- Dark background -->
+  <rect width="960" height="340" fill="#141419" rx="12"/>
+
+  <!-- Title and subtitle -->
+  <text x="480" y="30" text-anchor="middle" class="title">Which Model Should You Run?</text>
+  <text x="480" y="48" text-anchor="middle" class="subtitle">Quick lookup by MacBook configuration</text>
+
+  <!-- Top question box -->
+  <rect x="360" y="65" width="240" height="50" fill="#1E1E26" stroke="#2A2A3A" stroke-width="1.5" rx="8"/>
+  <text x="480" y="96" text-anchor="middle" class="label">What MacBook do you have?</text>
+
+  <!-- Arrow from question to branches -->
+  <line x1="480" y1="115" x2="480" y2="135" stroke="#2A2A3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Branch 1: Air M5 -->
+  <line x1="480" y1="135" x2="120" y2="175" stroke="#2A2A3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="20" y="180" width="200" height="120" fill="#1E1E26" stroke="#FF3CA0" stroke-width="2" rx="8"/>
+  <rect x="20" y="180" width="200" height="25" fill="#FF3CA0" rx="8"/>
+  <text x="120" y="198" text-anchor="middle" class="badge" fill="#141419">Air M5 (16 GB)</text>
+  <text x="30" y="220" class="label" font-size="11">Qwen2.5 VL 7B</text>
+  <text x="30" y="236" class="tick">4.8 GB • 69.8 tok/s</text>
+  <text x="30" y="252" class="tick">Accuracy: 0.90</text>
+  <text x="30" y="268" class="tick">Best for: Vision tasks</text>
+  <text x="30" y="284" class="tick">Speed: Very fast</text>
+
+  <!-- Branch 2: Pro M5 -->
+  <line x1="480" y1="135" x2="280" y2="175" stroke="#2A2A3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="180" y="180" width="200" height="120" fill="#1E1E26" stroke="#00BFA5" stroke-width="2" rx="8"/>
+  <rect x="180" y="180" width="200" height="25" fill="#00BFA5" rx="8"/>
+  <text x="280" y="198" text-anchor="middle" class="badge" fill="#141419">Pro M5 (32 GB)</text>
+  <text x="190" y="220" class="label" font-size="11">Qwen2.5 Coder 32B</text>
+  <text x="190" y="236" class="tick">18.3 GB • 19.4 tok/s</text>
+  <text x="190" y="252" class="tick">Accuracy: 0.91</text>
+  <text x="190" y="268" class="tick">Best for: Coding</text>
+  <text x="190" y="284" class="tick">Speed: Balanced</text>
+
+  <!-- Branch 3: Pro M5 Pro -->
+  <line x1="480" y1="135" x2="480" y2="175" stroke="#2A2A3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="380" y="180" width="200" height="120" fill="#1E1E26" stroke="#00BFA5" stroke-width="2" rx="8"/>
+  <rect x="380" y="180" width="200" height="25" fill="#00BFA5" rx="8"/>
+  <text x="480" y="198" text-anchor="middle" class="badge" fill="#141419">Pro M5 Pro (36-64GB)</text>
+  <text x="390" y="220" class="label" font-size="11">Mistral Small 24B</text>
+  <text x="390" y="236" class="tick">14.1 GB • 28 tok/s</text>
+  <text x="390" y="252" class="tick">Fast choice</text>
+  <text x="390" y="268" class="tick">Or: Qwen2.5 Coder 32B</text>
+  <text x="390" y="284" class="tick">Accurate choice</text>
+
+  <!-- Branch 4: Pro M5 Max -->
+  <line x1="480" y1="135" x2="680" y2="175" stroke="#2A2A3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="580" y="180" width="200" height="120" fill="#1E1E26" stroke="#00BFA5" stroke-width="2" rx="8"/>
+  <rect x="580" y="180" width="200" height="25" fill="#00BFA5" rx="8"/>
+  <text x="680" y="198" text-anchor="middle" class="badge" fill="#141419">Pro M5 Max (48-64GB)</text>
+  <text x="590" y="220" class="label" font-size="11">Llama 3.3 70B</text>
+  <text x="590" y="236" class="tick">39.7 GB • 9.0 tok/s</text>
+  <text x="590" y="252" class="tick">Accuracy: 0.90</text>
+  <text x="590" y="268" class="tick">Best for: Complex tasks</text>
+  <text x="590" y="284" class="tick">Speed: Slower</text>
+
+  <!-- Branch 5: Pro M5 Max 128 GB -->
+  <line x1="480" y1="135" x2="840" y2="175" stroke="#2A2A3A" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="740" y="180" width="200" height="120" fill="#1E1E26" stroke="#B9F43B" stroke-width="2" rx="8"/>
+  <rect x="740" y="180" width="200" height="25" fill="#B9F43B" rx="8"/>
+  <text x="840" y="198" text-anchor="middle" class="badge" fill="#141419">Pro M5 Max (128 GB)</text>
+  <text x="750" y="220" class="label" font-size="11">Qwen3.5 122B MoE</text>
+  <text x="750" y="236" class="tick">69.6 GB • 43.7 tok/s</text>
+  <text x="750" y="252" class="tick">Accuracy: 1.00</text>
+  <text x="750" y="268" class="tick">Best for: Premium use</text>
+  <text x="750" y="284" class="tick">Speed: Very fast</text>
+
+  <!-- Footer note -->
+  <text x="30" y="325" class="caption">💡 Tip: Accuracy scores and token speeds are approximate. Test on your hardware for real-world performance.</text>
+</svg>

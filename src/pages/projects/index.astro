@@ -7,6 +7,11 @@ const projects = allProjects.sort(
   (a, b) => (a.data.sortOrder ?? 99) - (b.data.sortOrder ?? 99)
 );
 
+const placeholderSlugs = new Set([
+  'homelab-infrastructure',
+  'personal-website',
+]);
+
 const allTechnologies = [...new Set(projects.flatMap((p) => p.data.technologies))].sort();
 ---
 
@@ -63,7 +68,7 @@ const allTechnologies = [...new Set(projects.flatMap((p) => p.data.technologies)
                   )}
                 </div>
                 <h3 class="mt-1 text-lg font-display font-bold text-[var(--text)] group-hover:text-[var(--color-primary)] transition-colors">
-                  {project.data.title}
+                  {project.data.title}{placeholderSlugs.has(project.id) && <span class="text-[var(--color-secondary)]">*</span>}
                 </h3>
                 <p class="mt-1 text-sm text-[var(--text-muted)] line-clamp-2">
                   {project.data.description}
@@ -81,6 +86,9 @@ const allTechnologies = [...new Set(projects.flatMap((p) => p.data.technologies)
         </div>
       ))}
     </div>
+    <p class="mt-6 text-xs text-[var(--text-muted)]">
+      <span class="text-[var(--color-secondary)]">*</span> Placeholder content — retained for site development. Will be replaced with real posts.
+    </p>
   </div>
 </BaseLayout>
 

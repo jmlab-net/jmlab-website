@@ -4,15 +4,24 @@ description: "Model recommendations for every M5 MacBook memory tier — 16 GB t
 pubDate: 2026-03-29
 tags: ["llm", "apple-silicon", "benchmarks", "lm-studio", "local-ai"]
 draft: false
+featured: true
 relatedProject:
   slug: "m5-macbook-benchmark-pipeline"
-  title: "M5 MacBook Benchmark Pipeline"
+  title: "M5 Max MacBook Benchmark Pipeline"
   description: "Full scores, methodology, and raw data"
 ---
 
-The 2026 M5 MacBook lineup spans three practical memory tiers for local LLMs: 16 GB, 32–64 GB, and 128 GB. Each tier opens up a different class of model. On Apple Silicon, the GPU and CPU share a single unified memory pool — when you load a model in LM Studio, the quantized model file loads entirely into this shared memory. A 70 GB model uses 70 GB of your RAM, leaving less for your OS, browser, IDE, and everything else.
+The 2026 M5 MacBook lineup spans three practical memory tiers for local LLMs: 16 GB, 32–64 GB, and 128 GB. Each tier opens up a different class of model. Since models load entirely into unified memory, the math is simple — subtract what your OS and apps need, and whatever's left is your model budget.
 
-**Reserve at least 8 GB for macOS and light apps.** If you're running an IDE, a browser with a dozen tabs, and Slack, budget closer to 16 GB. Memory bandwidth also matters — the M5 Max delivers 614 GB/s (4x the MacBook Air's 153 GB/s), which means noticeably faster token generation, especially with MLX models. Getting set up only takes a few minutes, and once you understand how formats, context length, and temperature shape performance, picking the right model for your machine is straightforward. The [full benchmark data](/projects/m5-macbook-benchmark-pipeline) has per-category scores, format comparisons, and the exact prompts used.
+**Reserve at least 8 GB for macOS and light apps.** If you're running an IDE, a browser with a dozen tabs, and Slack, budget closer to 16 GB. Memory bandwidth also matters — the M5 Max delivers 614 GB/s (4x the MacBook Air's 153 GB/s), which means noticeably faster token generation, especially with MLX models. The [full benchmark data](/projects/m5-macbook-benchmark-pipeline) has per-category scores, format comparisons, and the exact prompts used.
+
+![Memory bandwidth comparison across M5 Air, Pro, and Max showing impact on token generation speed](../../assets/blog/2026-03-29-best-local-llms-m5-macbook/memory-bandwidth-impact.svg)
+
+<div class="disclaimer">
+
+**Note:** All benchmarks were run on a single MacBook Pro M5 Max with 128 GB of unified memory. Performance figures for the M5 Air (16 GB) and M5 Pro (32–64 GB) tiers are estimates based on relative specs between chips — primarily memory bandwidth and GPU core counts. Your real-world results will vary.
+
+</div>
 
 <div class="section-label section-label--teal">Set it up</div>
 
@@ -26,7 +35,7 @@ The 2026 M5 MacBook lineup spans three practical memory tiers for local LLMs: 16
 
 All models in this post were tested with [LM Studio](https://lmstudio.ai), a desktop app for running local LLMs on macOS, Windows, and Linux. Download it, open it, and search for any model by name — it handles downloading, quantization format selection, and GPU offloading automatically. No terminal required. LM Studio also exposes an OpenAI-compatible API at `localhost:1234`, so anything that talks to the OpenAI API (scripts, VS Code extensions, other apps) can use your local model as a drop-in replacement. To set the context length, open the model settings panel before loading.
 
-I ran 14 open-weight LLMs through a structured benchmark pipeline on an M5 MacBook Pro with 128 GB of unified memory — four benchmark categories, three temperature settings, over 2,400 scored prompt runs. The [full project writeup](/projects/m5-macbook-benchmark-pipeline) has the methodology and raw data. Here are the top picks per tier:
+Here are the top picks per tier, pulled from over 2,400 scored prompt runs across 14 models. The [full methodology and raw data](/projects/m5-macbook-benchmark-pipeline) are in the project writeup.
 
 | Your MacBook | Model to Run | Format | GB | tok/s | Accuracy |
 |-------------|-------------|--------|-----|-------|----------|
@@ -36,16 +45,15 @@ I ran 14 open-weight LLMs through a structured benchmark pipeline on an M5 MacBo
 | 48–64 GB (step up) | Llama 3.3 70B | MLX 4-bit | 39.7 | 9.0 | 0.90 |
 | 128 GB (Pro M5 Max) | Qwen3.5 122B MoE | MLX 4-bit | 69.6 | 43.7 | 1.00 |
 
+![All tested models sorted by throughput, colored by memory tier, with GB shown at left](../../assets/blog/2026-03-29-best-local-llms-m5-macbook/speed-vs-memory-c.svg)
+
 ### GGUF vs MLX
 
-Both formats are quantized model files that run on Apple Silicon. The practical differences:
+Try MLX first if your model has both formats — it was faster for 6 of 11 models tested, with speedups up to 38% on higher-bandwidth chips. Switch to GGUF if it feels slow, especially on a MacBook Air where the lower bandwidth can flip the advantage. A few specifics:
 
-- **MLX was faster for 6 of 11 models** tested, with speedups up to 38%. The advantage is larger on higher-bandwidth chips (M5 Pro and Max).
-- **GGUF was faster for 5 of 11 models**, sometimes dramatically — Qwen2.5 VL 7B ran 45% faster in GGUF.
+- **GGUF was faster for 5 of 11 models** — Qwen2.5 VL 7B ran 45% faster in GGUF.
 - **Accuracy differences were minimal** — within 1–3% for the same model.
 - **GGUF has wider availability.** Not every model has an MLX version.
-
-Try MLX first if your model has both formats. Switch to GGUF if it feels slow. On a MacBook Air (lower bandwidth), GGUF may outperform MLX more often.
 
 </div>
 
@@ -55,13 +63,13 @@ Try MLX first if your model has both formats. Switch to GGUF if it feels slow. O
 
 <div class="section-group section-group--magenta">
 
+![Decision tree mapping each MacBook configuration to its recommended LLM with specs](../../assets/blog/2026-03-29-best-local-llms-m5-macbook/macbook-to-model-flowchart.svg)
+
 <div class="section-item">
 
 ## 16–24 GB: <7B models
 
-**Available on:** MacBook Air M5, MacBook Pro 14" M5 (base)
-
-With ~6–8 GB available for a model, you're limited to 7B-class models — but the best ones in this range are surprisingly capable.
+**If you have 16 GB** — with ~6–8 GB available for a model after the OS, you're limited to 7B-class models — but the best ones in this range are surprisingly capable.
 
 **Top pick: Qwen2.5 VL 7B** (GGUF Q4_K_M, 4.8 GB) — 69.8 tok/s, 0.90 accuracy
 
@@ -77,9 +85,7 @@ This was the efficiency champion of the entire benchmark. At 4.8 GB it fits comf
 
 ## 32–64 GB: <70B models
 
-**Available on:** MacBook Air M5 (32 GB), MacBook Pro M5 (32 GB), MacBook Pro M5 Pro (36–64 GB), MacBook Pro M5 Max (36–64 GB)
-
-This range covers the widest variety of MacBook configurations. With ~18–48 GB available for a model depending on your spec, the 24B and 32B models are the workhorses — and on the higher end, Llama 3.3 70B becomes an option.
+**If you have 32–64 GB** — with ~18–48 GB available for a model depending on your spec, the 24B and 32B models are the workhorses — and on the higher end, Llama 3.3 70B becomes an option.
 
 **Top pick: Qwen2.5 Coder 32B** (MLX 4-bit, 18.3 GB) — 19.4 tok/s, 0.91 accuracy
 
@@ -99,7 +105,7 @@ Half the size of the 32B models at nearly the same accuracy, and supports up to 
 
 **If you have 48–64 GB: Llama 3.3 70B** (MLX 4-bit, 39.7 GB) — 9.0 tok/s, 0.90 accuracy
 
-The largest dense (non-MoE) model tested. Solid accuracy but notably slow — 9 tok/s means you'll be waiting. The GGUF variant is even slower at 7.5 tok/s. Only practical on 48 GB or higher configs where you can spare 40 GB and still have room for your OS and apps. On M5 Max silicon, the 614 GB/s bandwidth helps — expect slightly better throughput than what I measured on my M5.
+The largest dense (non-MoE) model tested. Solid accuracy but notably slow — 9 tok/s means you'll be waiting. The GGUF variant is even slower at 7.5 tok/s. Only practical on 48 GB or higher configs where you can spare 40 GB and still have room for your OS and apps. At 9 tok/s on the M5 Max, expect even slower throughput on the M5 Pro where lower bandwidth is the bottleneck.
 
 **A note on the gap:** There's a real gap in available models between ~20 GB and ~40 GB. The 32B-class models top out around 18 GB, and the next meaningful step up is Llama 3.3 70B at 40 GB. Models like Qwen3 30B-A3B MoE (~17 GB) and Qwen3 32B (~19 GB) are promising newer releases in this space but weren't part of this benchmark — they're worth testing if you want to make the most of a 48 or 64 GB machine. This is an area I plan to expand in a future round of benchmarks.
 
@@ -109,9 +115,7 @@ The largest dense (non-MoE) model tested. Solid accuracy but notably slow — 9 
 
 ## 128 GB: 120B+ models
 
-**Available on:** MacBook Pro 14"/16" M5 Max (top config)
-
-With ~104–112 GB available, you can run the largest open-weight models available today — up to 229 billion parameters. Combined with the M5 Max's 614 GB/s memory bandwidth, this is the best local LLM experience you can get on a laptop.
+**If you have 128 GB** — with ~104–112 GB available, you can run the largest open-weight models available today — up to 229 billion parameters. Combined with the M5 Max's 614 GB/s memory bandwidth, this is the best local LLM experience you can get on a laptop.
 
 **Top pick: Qwen3.5 122B MoE** (MLX 4-bit, 69.6 GB) — 43.7 tok/s, 1.00 accuracy
 
@@ -152,6 +156,8 @@ Context length controls how much of your conversation or document the model can 
 - If you're choosing between a bigger model at 8K context or a smaller model at 32K, the bigger model at 8K usually gives better answers.
 
 ### Temperature
+
+![Three temperature settings — T=0.0 deterministic, T=0.3 balanced default, T=0.7 creative — with use cases](../../assets/blog/2026-03-29-best-local-llms-m5-macbook/temperature-effect.svg)
 
 Temperature controls randomness in the model's output. I tested every model at 0.0, 0.3, and 0.7.
 

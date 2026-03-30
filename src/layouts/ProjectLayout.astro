@@ -201,6 +201,16 @@ const { title, description, technologies, liveUrl, repoUrl } = Astro.props;
     overflow-x: auto;
   }
 
+  /* Disclaimer / note callout */
+  .project-prose :global(.disclaimer) {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-left: 3px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    margin: 1rem 0;
+    line-height: 1.5;
+  }
+
   /* Images & SVGs */
   .project-prose :global(img) {
     display: block;

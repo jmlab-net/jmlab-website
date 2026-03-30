@@ -2,7 +2,7 @@
 title: "Homelab Infrastructure"
 description: "Privacy-focused home server running containerized services for automation, AI, file storage, and development"
 technologies: ["docker", "linux"]
-featured: true
+featured: false
 sortOrder: 3
 ---
 
