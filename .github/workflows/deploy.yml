@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ !gitea }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
