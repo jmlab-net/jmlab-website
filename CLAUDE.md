@@ -13,7 +13,7 @@ This is a personal website built with Astro, deployed to GitHub Pages via GitHub
 - **Public site**: Astro static output → GitHub Pages (free CDN, SSL, zero-maintenance)
 - **Automation layer**: n8n + Ollama + Stable Diffusion on Unraid (content pipeline, image generation, monitoring)
 - **Dev mirror**: Gitea on Unraid mirrors the GitHub repo for local development
-- **Local dev preview**: Nginx on Unraid serves the built site at `REDACTED_HOSTNAME` via Traefik
+- **Local dev preview**: Nginx on Unraid serves the built site at the local dev domain via Traefik
 - **Reverse proxy**: Traefik + Cloudflare Tunnel for any API endpoints exposed from Unraid
 
 ### Production deployment flow
@@ -25,9 +25,9 @@ This is a personal website built with Astro, deployed to GitHub Pages via GitHub
 
 ### Local dev deployment flow
 1. Commit pushed to Gitea on Unraid
-2. Gitea Actions runner builds Astro with `SITE_URL=http://REDACTED_HOSTNAME`
+2. Gitea Actions runner builds Astro with local dev SITE_URL override
 3. Built `dist/` copied to shared volume served by Nginx
-4. Site available at `http://REDACTED_HOSTNAME` on LAN via Traefik
+4. Site available on LAN via Traefik
 
 ## Tech stack
 
@@ -210,4 +210,4 @@ Since we're setting up the framework first, include placeholder content so the s
 - This project prioritizes developer experience and automation. The goal is a site that largely maintains itself through the AI pipeline.
 - Performance budget: Lighthouse score ≥ 95 across all categories.
 - Accessibility: WCAG AA minimum. Semantic HTML, proper heading hierarchy, alt text on all images.
-- The Unraid server is at REDACTED_IP on the local network. Services: n8n, Ollama, Stable Diffusion (open-webui), Gitea, Traefik, Cloudflare Tunnel, Postgres, Mattermost, Immich.
+- The Unraid server runs on the local network. Services: n8n, Ollama, Stable Diffusion (open-webui), Gitea, Traefik, Cloudflare Tunnel, Postgres, Mattermost, Immich. See CLAUDE.local.md for IPs and endpoints.

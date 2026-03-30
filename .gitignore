@@ -8,6 +8,9 @@ _ops/
 .claude/CLAUDE.md
 CLAUDE.local.md
 
+# Gitea workflows (local dev only, not needed on GitHub)
+.gitea/
+
 # Astro build output
 dist/
 .astro/

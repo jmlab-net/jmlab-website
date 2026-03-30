@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://jmlab.github.io/sitemap-index.xml
+Sitemap: https://jmlab.net/sitemap-index.xml
