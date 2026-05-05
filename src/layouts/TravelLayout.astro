@@ -1,0 +1,206 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TagList from '../components/common/TagList.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  startDate: Date;
+  endDate: Date;
+  location: {
+    city: string;
+    country: string;
+    countryCode: string;
+    lat: number;
+    lon: number;
+  };
+  heroImage?: string;
+  heroImageAlt?: string;
+  tags?: string[];
+  headings?: { depth: number; slug: string; text: string }[];
+  prevTrip?: { slug: string; title: string } | null;
+  nextTrip?: { slug: string; title: string } | null;
+}
+
+const {
+  title,
+  description,
+  startDate,
+  endDate,
+  location,
+  tags = [],
+  headings = [],
+  prevTrip,
+  nextTrip,
+} = Astro.props;
+
+// Format the date range. If start/end are in the same month, render as
+// "Apr 30 – May 3, 2026". Otherwise "Apr 30 2026 – May 3 2026" etc.
+function formatDateRange(start: Date, end: Date): string {
+  const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', timeZone: 'UTC' };
+  const sameYear = start.getUTCFullYear() === end.getUTCFullYear();
+  const sameMonth = sameYear && start.getUTCMonth() === end.getUTCMonth();
+
+  if (sameMonth) {
+    const startStr = start.toLocaleDateString('en-US', opts);
+    const endStr = end.toLocaleDateString('en-US', { day: 'numeric', timeZone: 'UTC' });
+    return `${startStr} – ${endStr}, ${start.getUTCFullYear()}`;
+  }
+  if (sameYear) {
+    const startStr = start.toLocaleDateString('en-US', opts);
+    const endStr = end.toLocaleDateString('en-US', opts);
+    return `${startStr} – ${endStr}, ${start.getUTCFullYear()}`;
+  }
+  return `${start.toLocaleDateString('en-US', { ...opts, year: 'numeric' })} – ${end.toLocaleDateString('en-US', { ...opts, year: 'numeric' })}`;
+}
+
+const dateRange = formatDateRange(startDate, endDate);
+
+const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--text-muted)] mb-4">
+        <span class="font-mono">{dateRange}</span>
+        <span>&middot;</span>
+        <span class="trip-location">
+          <span class="trip-location-pin" aria-hidden="true">◉</span>
+          {location.city}, {location.country}
+        </span>
+      </div>
+      <h1 class="blog-title font-display font-800 tracking-tight" transition:name={`travel-title-${Astro.url.pathname}`}>
+        {title}
+      </h1>
+      <p class="mt-2 text-base text-[var(--text-muted)]">{description}</p>
+      {tags.length > 0 && (
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+          <TagList tags={tags} linkable size="md" />
+        </div>
+      )}
+    </header>
+
+    <!-- Two-column layout: sidebar + content -->
+    <div class="grid gap-8 lg:grid-cols-[200px_1fr]">
+      <!-- Sidebar nav -->
+      <aside class="hidden lg:block">
+        <nav class="sticky top-24">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">
+            On this page
+          </p>
+          <ul class="space-y-1 text-sm" id="travel-sidebar-nav">
+            <!-- Populated by JS from h2 headings -->
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Content -->
+      <div>
+        <div class="post-prose min-w-0">
+          <slot />
+        </div>
+
+        <!-- Prev/Next trip navigation -->
+        {(prevTrip || nextTrip) && (
+          <nav class="mt-16 pt-8 border-t border-[var(--border)] grid grid-cols-2 gap-4" aria-label="Trip navigation">
+            {prevTrip ? (
+              <a href={`/travel/${prevTrip.slug}/`} class="group text-left">
+                <span class="text-xs text-[var(--text-muted)] uppercase tracking-wider">Previous trip</span>
+                <p class="mt-1 font-display font-bold text-[var(--text)] group-hover:text-[var(--color-primary)] transition-colors">
+                  {prevTrip.title}
+                </p>
+              </a>
+            ) : <div />}
+            {nextTrip ? (
+              <a href={`/travel/${nextTrip.slug}/`} class="group text-right">
+                <span class="text-xs text-[var(--text-muted)] uppercase tracking-wider">Next trip</span>
+                <p class="mt-1 font-display font-bold text-[var(--text)] group-hover:text-[var(--color-primary)] transition-colors">
+                  {nextTrip.title}
+                </p>
+              </a>
+            ) : <div />}
+          </nav>
+        )}
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .blog-title {
+    font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem) !important;
+  }
+
+  .trip-location {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .trip-location-pin {
+    color: var(--color-primary);
+    font-size: 0.7rem;
+  }
+
+  /* Sidebar nav styling — matches BlogLayout */
+  #travel-sidebar-nav :global(a) {
+    display: block;
+    padding: 0.25rem 0.5rem;
+    border-left: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+
+  #travel-sidebar-nav :global(a:hover) {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  #travel-sidebar-nav :global(a.active) {
+    color: var(--color-primary);
+    border-left-color: var(--color-primary);
+  }
+</style>
+
+<script>
+  function initTravelNav() {
+    const nav = document.getElementById('travel-sidebar-nav');
+    const headings = document.querySelectorAll('.post-prose h2');
+    if (!nav || headings.length === 0) return;
+
+    nav.innerHTML = '';
+
+    headings.forEach((h2, i) => {
+      if (!h2.id) h2.id = `section-${i}`;
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = `#${h2.id}`;
+      a.textContent = h2.textContent || '';
+      li.appendChild(a);
+      nav.appendChild(li);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            nav.querySelectorAll('a').forEach((a) => a.classList.remove('active'));
+            const active = nav.querySelector(`a[href="#${entry.target.id}"]`);
+            if (active) active.classList.add('active');
+          }
+        });
+      },
+      { rootMargin: '-80px 0px -70% 0px', threshold: 0 }
+    );
+
+    headings.forEach((h2) => observer.observe(h2));
+  }
+
+  initTravelNav();
+  document.addEventListener('astro:after-swap', initTravelNav);
+</script>

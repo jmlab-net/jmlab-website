@@ -1,0 +1,154 @@
+---
+import { geoNaturalEarth1, geoPath } from 'd3-geo';
+import { feature } from 'topojson-client';
+import worldData from 'world-atlas/countries-110m.json';
+
+export interface Pin {
+  lat: number;
+  lon: number;
+  slug: string;
+  title: string;
+  city: string;
+  country: string;
+}
+
+interface Props {
+  pins: Pin[];
+  width?: number;
+  height?: number;
+}
+
+const { pins, width = 1000, height = 500 } = Astro.props;
+
+// world-atlas TopoJSON → GeoJSON FeatureCollection
+const countries = feature(
+  worldData as any,
+  (worldData as any).objects.countries
+) as GeoJSON.FeatureCollection;
+
+const projection = geoNaturalEarth1().fitSize([width, height], countries);
+const pathGen = geoPath(projection);
+
+// Project each pin's lat/lon to (x, y) on the SVG canvas
+const projectedPins = pins.map((pin) => {
+  const coords = projection([pin.lon, pin.lat]);
+  return {
+    ...pin,
+    x: coords ? coords[0] : 0,
+    y: coords ? coords[1] : 0,
+    visible: coords !== null,
+  };
+});
+---
+
+<div class="world-map">
+  <svg
+    viewBox={`0 0 ${width} ${height}`}
+    role="img"
+    aria-label={`World map with ${pins.length} trip ${pins.length === 1 ? 'pin' : 'pins'}`}
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="xMidYMid meet"
+  >
+    <!-- Graticule / land -->
+    <g class="countries">
+      {countries.features.map((country) => {
+        const d = pathGen(country as any);
+        return d ? <path d={d} /> : null;
+      })}
+    </g>
+
+    <!-- Trip pins -->
+    <g class="pins">
+      {projectedPins.filter((p) => p.visible).map((pin) => (
+        <a href={`/travel/${pin.slug}/`} class="pin-link">
+          <title>{pin.city}, {pin.country} — {pin.title}</title>
+          <circle cx={pin.x} cy={pin.y} r="9" class="pin-halo" />
+          <circle cx={pin.x} cy={pin.y} r="4.5" class="pin" />
+        </a>
+      ))}
+    </g>
+  </svg>
+</div>
+
+<style>
+  .world-map {
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.75rem;
+  }
+
+  .world-map svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Country shapes — subtle, don't compete with pins */
+  .countries path {
+    fill: var(--surface-raised);
+    stroke: var(--border);
+    stroke-width: 0.5;
+    stroke-linejoin: round;
+    transition: fill 0.3s ease;
+  }
+
+  /* Pin halo — subtle pulse to draw the eye */
+  .pin-halo {
+    fill: var(--color-primary);
+    opacity: 0.22;
+    animation: pin-pulse 2.6s ease-in-out infinite;
+  }
+
+  /* Pin core */
+  .pin {
+    fill: var(--color-primary);
+    stroke: var(--bg);
+    stroke-width: 1.2;
+    transition: fill 0.2s ease;
+  }
+
+  .pin-link {
+    cursor: pointer;
+    transition: filter 0.2s ease;
+  }
+
+  .pin-link:hover {
+    filter: drop-shadow(0 0 6px var(--color-primary));
+  }
+
+  .pin-link:hover .pin {
+    fill: var(--color-secondary);
+  }
+
+  .pin-link:hover .pin-halo {
+    opacity: 0.45;
+    animation-duration: 1s;
+  }
+
+  /* Stagger the pulse across pins so they don't all blink together.
+     Astro lets us style children but :nth-child works fine here since
+     each pin is a sibling <a>. */
+  .pin-link:nth-child(2n) .pin-halo { animation-delay: 0.6s; }
+  .pin-link:nth-child(3n) .pin-halo { animation-delay: 1.2s; }
+  .pin-link:nth-child(5n) .pin-halo { animation-delay: 1.8s; }
+
+  @keyframes pin-pulse {
+    0%, 100% { opacity: 0.22; }
+    50%      { opacity: 0.55; }
+  }
+
+  /* Honor user motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .pin-halo {
+      animation: none;
+      opacity: 0.35;
+    }
+    .pin-link {
+      transition: none;
+    }
+  }
+</style>

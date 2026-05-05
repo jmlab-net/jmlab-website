@@ -26,6 +26,30 @@ const blog = defineCollection({
   }),
 });
 
+const travel = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/travel' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date(),
+    location: z.object({
+      city: z.string(),
+      country: z.string(),
+      countryCode: z.string().length(2),
+      lat: z.number(),
+      lon: z.number(),
+    }),
+    heroImage: z.string().optional(),
+    heroImageAlt: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    gpxTrack: z.string().optional(),
+    companions: z.array(z.string()).optional(),
+    draft: z.boolean().default(false),
+    featured: z.boolean().default(false),
+  }),
+});
+
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
   schema: z.object({
@@ -55,4 +79,4 @@ const resume = defineCollection({
   }),
 });
 
-export const collections = { blog, projects, resume };
+export const collections = { blog, travel, projects, resume };

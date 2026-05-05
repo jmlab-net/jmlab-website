@@ -305,3 +305,354 @@ code {
   box-shadow: 0 0 20px color-mix(in srgb, var(--color-primary) 30%, transparent),
               0 0 60px color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
+
+/* ── Shared post-body typography (blog + travel) ─────────────── */
+.post-prose h2 {
+  font-size: 1.15rem !important;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+  font-family: 'Syne Variable', sans-serif;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.post-prose h3 {
+  font-size: 1rem !important;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.post-prose p {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.post-prose ul,
+.post-prose ol {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.post-prose li {
+  margin-top: 0.15rem;
+  margin-bottom: 0.15rem;
+}
+
+.post-prose strong {
+  color: var(--text);
+}
+
+.post-prose a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.post-prose a:hover {
+  text-decoration: underline;
+}
+
+.post-prose table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.82rem;
+  margin-top: 1rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.post-prose thead {
+  background: var(--surface-raised);
+}
+
+.post-prose th {
+  padding: 0.6rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.post-prose td {
+  padding: 0.5rem 1rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.post-prose tr:last-child td {
+  border-bottom: none;
+}
+
+.post-prose tbody tr:hover {
+  background: var(--surface-raised);
+}
+
+.post-prose td code {
+  font-size: 0.75rem;
+  padding: 0.1rem 0.25rem;
+}
+
+.post-prose code {
+  font-size: 0.8rem;
+  background: var(--surface-raised);
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border);
+}
+
+.post-prose pre {
+  font-size: 0.8rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+}
+
+.post-prose pre code {
+  background: none;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+.post-prose img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0.5rem;
+}
+
+.post-prose blockquote {
+  border-left: 3px solid var(--color-primary);
+  padding-left: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.post-prose hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* Section labels — full-width bar dividers between major parts of a post */
+.post-prose .section-label {
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.3rem;
+  font-family: 'Syne Variable', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #fff;
+}
+
+.post-prose .section-label--magenta {
+  background: var(--color-secondary);
+}
+
+.post-prose .section-label--teal {
+  background: var(--color-accent);
+}
+
+.post-prose .section-label--chartreuse {
+  background: var(--color-primary);
+  color: #050505;
+}
+
+.post-prose .section-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.post-prose .section-item {
+  padding-left: 0.85rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.post-prose .section-group--magenta .section-item {
+  border-left: 3px solid var(--color-secondary);
+}
+
+.post-prose .section-group--teal .section-item {
+  border-left: 3px solid var(--color-accent);
+}
+
+.post-prose .section-group--chartreuse .section-item {
+  border-left: 3px solid var(--color-primary);
+}
+
+.post-prose .section-item > *:first-child {
+  margin-top: 0.5rem;
+}
+
+/* Side-by-side text + graphic layout */
+.post-prose .side-by-side {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin: 1.5rem 0;
+}
+
+.post-prose .side-by-side .side-text {
+  flex: 1 1 55%;
+  min-width: 0;
+}
+
+.post-prose .side-by-side .side-graphic {
+  flex: 0 0 42%;
+  min-width: 0;
+}
+
+.post-prose .side-by-side .side-graphic p {
+  margin: 0;
+}
+
+.post-prose .side-by-side .side-graphic img {
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .post-prose .side-by-side {
+    flex-direction: column;
+  }
+  .post-prose .side-by-side .side-graphic {
+    flex: 1 1 100%;
+  }
+}
+
+.post-prose .disclaimer {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  border-left: 3px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  margin: 1rem 0;
+  line-height: 1.5;
+}
+
+/* Image cursor (overrides post-prose img above for hover affordance) */
+.post-prose img {
+  cursor: zoom-in;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+/* Photo grid — wrap a sequence of images in <div class="photo-grid">…</div> */
+.post-prose .photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.post-prose .photo-grid p {
+  margin: 0;
+}
+
+.post-prose .photo-grid img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin: 0;
+  border-radius: 0.5rem;
+  display: block;
+}
+
+.post-prose .photo-grid img:hover {
+  transform: scale(1.01);
+  filter: brightness(1.05);
+}
+
+/* 2-column variant — useful for photo-only stub posts where you want a
+   denser, magazine-style layout. Override the auto-fit with a strict 2-col
+   grid that stays 2 wide on desktop and collapses to 1 wide on phones. */
+.post-prose .photo-grid--2col {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 540px) {
+  .post-prose .photo-grid--2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Image lightbox dialog — opens on click of any .post-prose img */
+.lightbox {
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: 95vw;
+  max-height: 95vh;
+  overflow: visible;
+  color-scheme: dark;
+  /* Force center on viewport — overrides any framework / UA default that
+     would otherwise pin the dialog to the top-left. */
+  position: fixed;
+  inset: 0;
+  margin: auto;
+}
+
+.lightbox::backdrop {
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(4px);
+}
+
+.lightbox img {
+  max-width: 95vw;
+  max-height: 95vh;
+  display: block;
+  border-radius: 0.5rem;
+  margin: 0;
+  cursor: default;
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.lightbox-close:hover {
+  background: rgba(0, 0, 0, 0.9);
+}

@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TripCard from '../../components/common/TripCard.astro';
+import WorldMap from '../../components/travel/WorldMap.astro';
+import { getCollection } from 'astro:content';
+
+const allTrips = await getCollection('travel', ({ data }) => !data.draft);
+const trips = allTrips.sort(
+  (a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf()
+);
+
+// Build the pin list for the map from the trip collection.
+const pins = trips.map((trip) => ({
+  lat: trip.data.location.lat,
+  lon: trip.data.location.lon,
+  slug: trip.id,
+  title: trip.data.title,
+  city: trip.data.location.city,
+  country: trip.data.location.country,
+}));
+
+// Distinct countries visited (for the small "stats" line under the map)
+const visitedCountries = new Set(trips.map((t) => t.data.location.countryCode));
+---
+
+<BaseLayout
+  title="Travel"
+  description="Trips, photos, and memories from places I've been. Personal travel notes for friends and family."
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+    <!-- Header -->
+    <header class="mb-12">
+      <h1 class="font-display font-800 tracking-tight">
+        <span class="gradient-text">Travel</span>
+      </h1>
+      <p class="mt-3 text-xl text-[var(--text-muted)]">
+        Trips, photos, and memories. A growing collection of places that taught me
+        something — kept here as much for me as for anyone else.
+      </p>
+    </header>
+
+    <!-- World map — pins are clickable and link to each trip page -->
+    {pins.length > 0 && (
+      <section class="mb-6">
+        <WorldMap pins={pins} />
+        <p class="mt-3 text-xs text-[var(--text-muted)] font-mono text-center">
+          {trips.length} {trips.length === 1 ? 'trip' : 'trips'}
+          &nbsp;·&nbsp;
+          {visitedCountries.size} {visitedCountries.size === 1 ? 'country' : 'countries'}
+        </p>
+      </section>
+    )}
+
+    <!-- Trip list -->
+    {trips.length > 0 ? (
+      <div class="flex flex-col gap-4">
+        {trips.map((trip) => (
+          <TripCard
+            title={trip.data.title}
+            description={trip.data.description}
+            startDate={trip.data.startDate}
+            endDate={trip.data.endDate}
+            location={trip.data.location}
+            slug={trip.id}
+            tags={trip.data.tags}
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="text-[var(--text-muted)]">No trips yet. Check back soon.</p>
+    )}
+  </div>
+</BaseLayout>

@@ -122,7 +122,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 
       <!-- Content -->
       <div>
-        <div class="blog-prose min-w-0">
+        <div class="post-prose min-w-0">
           <slot />
         </div>
 
@@ -150,271 +150,17 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
       </div>
     </div>
   </div>
+
 </BaseLayout>
 
 <style>
+  /* Post title sizing — used by both blog and travel post headers */
   .blog-title {
     font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem) !important;
   }
 
-  .blog-prose :global(h2) {
-    font-size: 1.15rem !important;
-    font-weight: 700;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-    color: var(--text);
-    font-family: 'Syne Variable', sans-serif;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 0.5rem;
-  }
-
-  .blog-prose :global(h3) {
-    font-size: 1rem !important;
-    font-weight: 600;
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    color: var(--text);
-  }
-
-  .blog-prose :global(p) {
-    font-size: 0.9rem;
-    line-height: 1.7;
-    color: var(--text-muted);
-    margin-top: 0.5rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .blog-prose :global(ul),
-  .blog-prose :global(ol) {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: var(--text-muted);
-    margin-top: 0.5rem;
-    margin-bottom: 0.75rem;
-    padding-left: 1.25rem;
-  }
-
-  .blog-prose :global(li) {
-    margin-top: 0.15rem;
-    margin-bottom: 0.15rem;
-  }
-
-  .blog-prose :global(strong) {
-    color: var(--text);
-  }
-
-  .blog-prose :global(a) {
-    color: var(--color-primary);
-    text-decoration: none;
-  }
-
-  .blog-prose :global(a:hover) {
-    text-decoration: underline;
-  }
-
-  /* Tables */
-  .blog-prose :global(table) {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    font-size: 0.82rem;
-    margin-top: 1rem;
-    margin-bottom: 1.25rem;
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
-    overflow: hidden;
-  }
-
-  .blog-prose :global(thead) {
-    background: var(--surface-raised);
-  }
-
-  .blog-prose :global(th) {
-    padding: 0.6rem 1rem;
-    text-align: left;
-    font-weight: 600;
-    color: var(--text);
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-
-  .blog-prose :global(td) {
-    padding: 0.5rem 1rem;
-    color: var(--text-muted);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .blog-prose :global(tr:last-child td) {
-    border-bottom: none;
-  }
-
-  .blog-prose :global(tbody tr:hover) {
-    background: var(--surface-raised);
-  }
-
-  .blog-prose :global(td code) {
-    font-size: 0.75rem;
-    padding: 0.1rem 0.25rem;
-  }
-
-  .blog-prose :global(code) {
-    font-size: 0.8rem;
-    background: var(--surface-raised);
-    padding: 0.15rem 0.35rem;
-    border-radius: 0.25rem;
-    border: 1px solid var(--border);
-  }
-
-  .blog-prose :global(pre) {
-    font-size: 0.8rem;
-    margin-top: 0.75rem;
-    margin-bottom: 0.75rem;
-    padding: 1rem;
-    border-radius: 0.75rem;
-    overflow-x: auto;
-    border: 1px solid var(--border);
-  }
-
-  .blog-prose :global(pre code) {
-    background: none;
-    padding: 0;
-    border: none;
-    font-size: inherit;
-  }
-
-  /* Images */
-  .blog-prose :global(img) {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 0.5rem;
-  }
-
-  /* Blockquotes */
-  .blog-prose :global(blockquote) {
-    border-left: 3px solid var(--color-primary);
-    padding-left: 1rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    color: var(--text-muted);
-    font-style: italic;
-  }
-
-  /* Horizontal rules */
-  .blog-prose :global(hr) {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 2rem 0;
-  }
-
-  /* Section labels — full-width bar dividers between major parts of a post */
-  .blog-prose :global(.section-label) {
-    margin-top: 2.5rem;
-    margin-bottom: 1.25rem;
-    padding: 0.45rem 0.75rem;
-    border-radius: 0.3rem;
-    font-family: 'Syne Variable', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #fff;
-  }
-
-  .blog-prose :global(.section-label--magenta) {
-    background: var(--color-secondary);
-  }
-
-  .blog-prose :global(.section-label--teal) {
-    background: var(--color-accent);
-  }
-
-  .blog-prose :global(.section-label--chartreuse) {
-    background: var(--color-primary);
-    color: #050505;
-  }
-
-  /* Section groups — container for subsection items */
-  .blog-prose :global(.section-group) {
-    margin-bottom: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
-
-  /* Individual subsection items — bordered blocks within a section group */
-  .blog-prose :global(.section-item) {
-    padding-left: 0.85rem;
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
-  }
-
-  .blog-prose :global(.section-group--magenta .section-item) {
-    border-left: 3px solid var(--color-secondary);
-  }
-
-  .blog-prose :global(.section-group--teal .section-item) {
-    border-left: 3px solid var(--color-accent);
-  }
-
-  .blog-prose :global(.section-group--chartreuse .section-item) {
-    border-left: 3px solid var(--color-primary);
-  }
-
-  /* First element inside a section item shouldn't have extra top margin */
-  .blog-prose :global(.section-item > *:first-child) {
-    margin-top: 0.5rem;
-  }
-
-  /* Side-by-side text + graphic layout */
-  .blog-prose :global(.side-by-side) {
-    display: flex;
-    gap: 1.5rem;
-    align-items: flex-start;
-    margin: 1.5rem 0;
-  }
-
-  .blog-prose :global(.side-by-side .side-text) {
-    flex: 1 1 55%;
-    min-width: 0;
-  }
-
-  .blog-prose :global(.side-by-side .side-graphic) {
-    flex: 0 0 42%;
-    min-width: 0;
-  }
-
-  .blog-prose :global(.side-by-side .side-graphic p) {
-    margin: 0;
-  }
-
-  .blog-prose :global(.side-by-side .side-graphic img) {
-    width: 100%;
-    height: auto;
-    margin: 0;
-  }
-
-  @media (max-width: 640px) {
-    .blog-prose :global(.side-by-side) {
-      flex-direction: column;
-    }
-    .blog-prose :global(.side-by-side .side-graphic) {
-      flex: 1 1 100%;
-    }
-  }
-
-  /* Disclaimer / note callout */
-  .blog-prose :global(.disclaimer) {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    border-left: 3px solid var(--border);
-    padding: 0.5rem 0.75rem;
-    margin: 1rem 0;
-    line-height: 1.5;
-  }
+  /* Note: prose typography (.post-prose ...) lives in src/styles/global.css
+     so it applies to both BlogLayout and TravelLayout. */
 
   /* Sidebar nav styling */
   #blog-sidebar-nav :global(a) {
@@ -551,7 +297,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 <script>
   function initBlogNav() {
     const nav = document.getElementById('blog-sidebar-nav');
-    const headings = document.querySelectorAll('.blog-prose h2');
+    const headings = document.querySelectorAll('.post-prose h2');
     if (!nav || headings.length === 0) return;
 
     nav.innerHTML = '';

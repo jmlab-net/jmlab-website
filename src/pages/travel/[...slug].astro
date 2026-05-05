@@ -1,0 +1,41 @@
+---
+import TravelLayout from '../../layouts/TravelLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const trips = await getCollection('travel', ({ data }) => !data.draft);
+  // Sort by startDate descending so prev/next nav reads chronologically
+  const sorted = trips.sort(
+    (a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf()
+  );
+
+  return sorted.map((trip, index) => ({
+    params: { slug: trip.id },
+    props: {
+      trip,
+      // "prevTrip" = older trip; "nextTrip" = newer trip
+      prevTrip: index < sorted.length - 1 ? { slug: sorted[index + 1].id, title: sorted[index + 1].data.title } : null,
+      nextTrip: index > 0 ? { slug: sorted[index - 1].id, title: sorted[index - 1].data.title } : null,
+    },
+  }));
+}
+
+const { trip, prevTrip, nextTrip } = Astro.props;
+const { Content, headings } = await render(trip);
+---
+
+<TravelLayout
+  title={trip.data.title}
+  description={trip.data.description}
+  startDate={trip.data.startDate}
+  endDate={trip.data.endDate}
+  location={trip.data.location}
+  heroImage={trip.data.heroImage}
+  heroImageAlt={trip.data.heroImageAlt}
+  tags={trip.data.tags}
+  headings={headings}
+  prevTrip={prevTrip}
+  nextTrip={nextTrip}
+>
+  <Content />
+</TravelLayout>

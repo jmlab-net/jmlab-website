@@ -65,5 +65,48 @@ const pageTitle = title === 'Home' ? 'JMLab' : `${title} — JMLab`;
       <slot />
     </main>
     <Footer />
+
+    <!-- Shared image lightbox — opens on click of any .post-prose img -->
+    <dialog class="lightbox" id="post-lightbox">
+      <button class="lightbox-close" type="button" aria-label="Close">&times;</button>
+      <img alt="" />
+    </dialog>
+
+    <script>
+      // Delegated click handler so it survives view transitions and
+      // doesn't double-bind on after-swap.
+      function setupPostLightbox() {
+        if (window.__postLightboxInit) return;
+        window.__postLightboxInit = true;
+
+        document.addEventListener('click', (e) => {
+          const t = e.target;
+          if (!t) return;
+          const dlg = document.getElementById('post-lightbox');
+          if (!dlg) return;
+          const dlgImg = dlg.querySelector('img');
+
+          // Open lightbox on any image inside .post-prose
+          if (dlgImg && t.tagName === 'IMG' && t.closest('.post-prose')) {
+            dlgImg.src = t.src;
+            dlgImg.alt = t.alt || '';
+            dlg.showModal();
+            return;
+          }
+
+          // Close button
+          if (t.classList && t.classList.contains('lightbox-close')) {
+            dlg.close();
+            return;
+          }
+
+          // Backdrop click (target is the dialog itself, not its children)
+          if (t.id === 'post-lightbox') {
+            dlg.close();
+          }
+        });
+      }
+      setupPostLightbox();
+    </script>
   </body>
 </html>
